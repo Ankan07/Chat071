@@ -1,4 +1,4 @@
-const { ObjectId } = require("mongodb");
+import { ObjectId } from "mongodb";
 
 export const requiredparams = async (params: any, required: any) => {
   let result = false;
@@ -6,9 +6,9 @@ export const requiredparams = async (params: any, required: any) => {
   let y;
   for (x of required) {
     for (y of params) {
-      if (x == y) result = true;
+      if (x === y) result = true;
     }
-    if (result == false) break;
+    if (result === false) break;
   }
 
   return result;
@@ -82,7 +82,7 @@ export const searchproduct = async (req: any, res: any, db: any) => {
   }
 };
 
-//orders
+// orders
 
 export const createorder = async (req: any, res: any, db: any) => {
   try {
@@ -143,7 +143,7 @@ export const getorderbyid = async (req: any, res: any, db: any) => {
   }
 };
 
-//user
+// user
 
 export const createuser = async (req: any, res: any, db: any) => {
   try {
