@@ -1,7 +1,8 @@
 import express from "express";
 import { Db } from "mongodb";
 import { UserFunctions } from "./userFunctions";
-
+import {Auth} from '../../Auth/auth';
+ 
 export class UserRoutes {
 
 /*
@@ -20,20 +21,29 @@ export class UserRoutes {
 private functions: UserFunctions;
 
   constructor(private db: Db) {
+    
     this.functions = new UserFunctions(db);
   }
 
   getRoutes() {
+    var auth=new Auth().verifyToken;
+
     return express
       .Router()
       .post("", (req, res) => {
         this.functions.createOrUpdateUser(req, res);
       })
-      .get("", (req, res) => {
+      .get("",auth,(req, res) => {
         this.functions.getuser(req, res);
       })
-      .get("/:id", (req, res) => {
+      .get("/:id", auth,(req, res) => {
         this.functions.getuser(req, res);
-      });
+      })
+      .get("/confirmation/:id",(req, res) => {
+        this.functions.routeback(req, res);
+      })
+      .post("/login",(req, res) => {
+        this.functions.login(req, res);
+      })
   }
 }
