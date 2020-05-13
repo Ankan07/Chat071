@@ -45,5 +45,8 @@ private functions: UserFunctions;
       .post("/login",(req, res) => {
         this.functions.login(req, res);
       })
+      .post("/forgotpassword",(req, res) => {
+        this.functions.forgotpassword(req, res);
+      })
   }
 }

@@ -90,7 +90,36 @@ export class UserFunctions {
       });
     }
   }
-  async createOrUpdateUser(req: Request, res: Response) {
+async forgotpassword(req: Request, res: Response) {
+    try {
+      const post = req.body;
+
+      const update = await this.db
+        .collection(this.COLLECTION)
+        .findOne({ $and: [{ email: post.email }, { emailConfirmed: true }] });
+      if (update) {
+ 
+       await mail(update.email,'forgot password', update._id)
+
+       res.send({
+        status: true,
+        message: "Please check your email for password recovery link.",
+      });
+      } else {
+        res.send({
+          status: false,
+          message: "User Not Found",
+        });
+      }
+    } catch (error) {
+      console.log("error is ", error);
+      res.status(500).send({
+        message: "failure",
+        error: JSON.stringify(error),
+      });
+    }
+  }
+async createOrUpdateUser(req: Request, res: Response) {
     try {
       const post = req.body;
       let queryBody = {};

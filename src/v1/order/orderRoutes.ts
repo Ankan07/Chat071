@@ -1,6 +1,7 @@
 import express from "express";
 import { Db } from "mongodb";
 import { OrderFunctions } from "./orderFunctions";
+import {Auth} from '../../Auth/auth';
 export class OrderRoutes {
 
 /*
@@ -30,15 +31,17 @@ export class OrderRoutes {
   }
 
   getRoutes() {
+
+    var auth=new Auth().verifyToken;
     return express
       .Router()
-      .post("", (req, res) => {
+      .post("",auth, (req, res) => {
         this.functions.insertOrUpdateOrder(req, res);
       })
-      .get("", (req, res) => {
+      .get("", auth,(req, res) => {
         this.functions.getOrderByCriteria(req, res);
       })
-      .get("/:id", (req, res) => {
+      .get("/:id", auth,(req, res) => {
         this.functions.getorderbyid(req, res);
       });
   }
