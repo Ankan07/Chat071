@@ -4,7 +4,7 @@ echo "are bhai bhai bhai"
 set -e
 
 # Delete the old repo
-rm -rf /home/ubuntu/devops
+rm -rf /home/ubuntu/backend
 echo "removed old directory"
 # clone the repo again
 git clone https://gitlab.com/essentials1/backend.git
@@ -21,7 +21,7 @@ pm2 kill
 # starting pm2 daemon
 pm2 status
  
-cd /home/ubuntu/devops
+cd /home/ubuntu/backend
 
 #install npm packages
 echo "Running npm install"
