@@ -2,7 +2,7 @@ stages:
   - deploy
 
 production:
-  stage:deploy
+  stage: deploy
   before_script:
     #generate ssh key
     - mkdir -p ~/.ssh
@@ -13,7 +13,7 @@ production:
   script:
     - bash .gitlab-deploy.sh
   only:
-    -ankan
+    - ankan
   environment:
     name: production
     url: https://your.url.com
