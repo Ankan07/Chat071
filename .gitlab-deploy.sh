@@ -1,6 +1,6 @@
 #!/bin/bash
 #Get servers list
-echo {$DEPLOY_SERVERS}
+echo $PRIVATE_KEY
 
 set -f
  
