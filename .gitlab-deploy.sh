@@ -1,10 +1,10 @@
 #!/bin/bash
 #Get servers list
-echo $DEPLOY_SERVERS
+echo"$DEPLOY_SERVERS"
 
 set -f
  
-ssh ubuntu@$DEPLOY_SERVERS  'bash -s' < ./deploy/updateAndRestart.sh
+ssh ubuntu@"$DEPLOY_SERVERS"  'bash -s' < ./deploy/updateAndRestart.sh
 #Iterate servers for deploy and pull last commit
 # for i in "${!array[@]}"; do
 #   echo "Deploying information to EC2 and Gitlab"
