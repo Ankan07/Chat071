@@ -8,6 +8,8 @@ rm -rf /home/ubuntu/backend
 echo "removed old directory"
 # clone the repo again 
 git clone https://pjN3nsNarcQgEWsHJceU:pjN3nsNarcQgEWsHJceU@gitlab.com/essentials1/backend.git
+
+git checkout ankan
  
 #source the nvm file. In an non
 #If you are not using nvm, add the actual path like
