@@ -1,9 +1,6 @@
 #!/bin/bash
 #Get servers list
-echo "in gitlab-deploy.sh"
-echo $DEPLOY_SERVERS
 set -f
-
 string=$DEPLOY_SERVERS
 array=(${string//,/ })
 #Iterate servers for deploy and pull last commit
