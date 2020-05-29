@@ -4,7 +4,7 @@ set -e
  
 ankan=mukherjee
  
-DEPLOY_SERVERS=$DEPLOY_SERVERS // We defined this in GitLab
+DEPLOY_SERVERS=$DEPLOY_SERVERS  
 ALL_SERVERS=(${DEPLOY_SERVERS//,/ })
 for server in "${ALL_SERVERS[@]}"
  
