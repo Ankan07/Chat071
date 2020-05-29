@@ -1,7 +1,7 @@
 stages:
   - deploy
 
-production:
+random:
   stage: deploy
   before_script:
     #generate ssh key

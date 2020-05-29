@@ -1,5 +1,6 @@
 #!/bin/bash
 #Get servers list
+echo "in gitlab-deploy.sh"
 set -f
 string=$DEPLOY_SERVERS
 array=(${string//,/ })
