@@ -27,5 +27,8 @@ cd /home/ubuntu/backend
 echo "Running npm install"
 npm install
 
-#Restart the node server
-npm start
+#Build the node server
+npm run build
+
+#Start the pm2 server
+pm2 start dist/app.js
