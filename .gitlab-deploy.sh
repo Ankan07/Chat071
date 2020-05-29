@@ -6,7 +6,7 @@ set -e
  
 ankan=$DEPLOY_SERVERS   
 length=${#ankan}
-echo "Length of '$ankan is $length"
+echo "Length of '$ankan' is $length"
 # ALL_SERVERS=(${DEPLOY_SERVERS//,/ })
 # for server in "${ALL_SERVERS[@]}"
 # do
