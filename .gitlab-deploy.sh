@@ -2,7 +2,9 @@
 #Get servers list
 set -f
 string=$DEPLOY_SERVERS
-echo $string
+        
+ankan=mukherjee
+echo $ankan
 array=(${string//,/ })
 #Iterate servers for deploy and pull last commit
 for i in "${!array[@]}"; do
