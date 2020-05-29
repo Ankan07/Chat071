@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/v1", new BaseRoutes().getRouter());
 app.get("/", (req, res) => {
-  res.send("You dont know what you're doing, do you?");
+  res.send("You dont know what you're doing, do you? yo yo yo ");
 });
 
 app.listen(PORT, () => {
