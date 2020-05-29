@@ -4,6 +4,7 @@ set -f
 string=$DEPLOY_SERVERS
 array=(${string//,/ })
 echo "you are not my superiori"
+echo array
 #Iterate servers for deploy and pull last commit
 for i in "${!array[@]}"; do
   echo "Deploying information to EC2 and Gitlab"
