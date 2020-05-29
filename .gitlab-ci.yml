@@ -15,7 +15,3 @@ random:
     - bash .gitlab-deploy.sh
   only:
     - ankan
-  environment:
-    name: production
-    url: https://your.url.com
-  when: manual
