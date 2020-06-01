@@ -1,7 +1,7 @@
 import express from "express";
 import { ProductFunctions } from "./productFunctions";
 import { Db } from "mongodb";
-import {Auth} from '../../Auth/auth';
+import { Auth } from "../../Auth/auth";
 
 export class ProductRoutes {
   private functions: ProductFunctions;
@@ -10,22 +10,22 @@ export class ProductRoutes {
   }
 
   getRoutes() {
-    var auth=new Auth().verifyToken;
+    var auth = new Auth().verifyToken;
     return express
       .Router()
-      .post("",auth, (req, res) => {
+      .post("", auth, (req, res) => {
         this.functions.addproduct(req, res);
       })
-      .post("/list/:type", auth,(req, res) => {
+      .post("/list/:type", auth, (req, res) => {
         this.functions.listproduct(req, res);
       })
-      .post("", auth,(req, res) => {
+      .post("", auth, (req, res) => {
         this.functions.editproduct(req, res);
       })
-      .post("/delete/:id", auth,(req, res) => {
+      .post("/delete/:id", auth, (req, res) => {
         this.functions.deleteproduct(req, res);
       })
-      .get("/search/:text", auth,(req, res) => {
+      .get("/search/:text", auth, (req, res) => {
         this.functions.searchproduct(req, res);
       });
   }
