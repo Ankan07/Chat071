@@ -2,7 +2,7 @@ import { Db, ObjectId } from "mongodb";
 import { Request, Response } from "express";
 
 export class ProductFunctions {
-COLLECTION = 'product';
+  COLLECTION = "product";
   constructor(private db: Db) {}
 
   async addproduct(req: Request, res: Response) {
@@ -22,13 +22,15 @@ COLLECTION = 'product';
   async listproduct(req: Request, res: Response) {
     try {
       const post = req.body;
-
+      const query = req.params.type === "all" ? {} : { type: req.params.type };
       const result = await this.db
         .collection(this.COLLECTION)
-        .find({ type: req.params.type });
+        .find(query)
+        .toArray();
 
       res.send({ message: "success", data: result });
     } catch (err) {
+      console.log("error is ", err);
       res.status(500).send({ message: "failure", error: err });
     }
   }
@@ -65,11 +67,13 @@ COLLECTION = 'product';
       if (req.params) {
         result = await this.db
           .collection(this.COLLECTION)
-          .find({ $text: { $search: req.params.text } });
+          .find({ $text: { $search: req.params.text } })
+          .toArray();
       }
 
       res.send({ message: "success", data: result });
     } catch (err) {
+      console.log("error is ", err);
       res.status(500).send({ message: "failure", error: err });
     }
   }
