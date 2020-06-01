@@ -6,7 +6,7 @@ export class Auth {
 
  async verifyToken(req: Request, res: Response, next: any) {
     try {
-      const bearerHeader = req.headers["authorization"];
+      const bearerHeader = req.headers.authorization;
 
       if (typeof bearerHeader !== "undefined") {
         const bearer = bearerHeader.split(" ");
@@ -18,11 +18,11 @@ export class Auth {
         next();
       } else {
         res.status(403).send({"message":"forbidden"});
-       
+
       }
     } catch (err) {
       res.status(403).send({"message":"forbidden"});
- 
+
     }
   }
 }

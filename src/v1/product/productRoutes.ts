@@ -10,16 +10,16 @@ export class ProductRoutes {
   }
 
   getRoutes() {
-    var auth=new Auth().verifyToken;
+    const auth = new Auth().verifyToken;
     return express
       .Router()
       .post("",auth, (req, res) => {
         this.functions.addproduct(req, res);
       })
-      .post("/list/:type", auth,(req, res) => {
+      .get("/list/:type", auth,(req, res) => {
         this.functions.listproduct(req, res);
       })
-      .post("", auth,(req, res) => {
+      .put("", auth,(req, res) => {
         this.functions.editproduct(req, res);
       })
       .post("/delete/:id", auth,(req, res) => {

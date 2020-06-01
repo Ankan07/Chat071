@@ -32,7 +32,7 @@ export class OrderRoutes {
 
   getRoutes() {
 
-    var auth=new Auth().verifyToken;
+    const auth = new Auth().verifyToken;
     return express
       .Router()
       .post("",auth, (req, res) => {

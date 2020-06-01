@@ -2,7 +2,7 @@ import express from "express";
 import { Db } from "mongodb";
 import { UserFunctions } from "./userFunctions";
 import {Auth} from '../../Auth/auth';
- 
+
 export class UserRoutes {
 
 /*
@@ -21,20 +21,23 @@ export class UserRoutes {
 private functions: UserFunctions;
 
   constructor(private db: Db) {
-    
+
     this.functions = new UserFunctions(db);
   }
 
   getRoutes() {
-    var auth=new Auth().verifyToken;
+    const auth = new Auth().verifyToken;
 
     return express
       .Router()
       .post("", (req, res) => {
-        this.functions.createOrUpdateUser(req, res);
+        this.functions.createUser(req, res);
       })
-      .get("",auth,(req, res) => {
-        this.functions.getuser(req, res);
+      // .get("",auth,(req, res) => {
+      //   this.functions.getuser(req, res);
+      // })
+      .put('', (req, res) => {
+        this.functions.updateUser(req, res);
       })
       .get("/:id", auth,(req, res) => {
         this.functions.getuser(req, res);

@@ -1,6 +1,6 @@
 import { Db, ObjectId } from "mongodb";
 import { Request, Response } from "express";
- 
+
 export class ProductFunctions {
 COLLECTION = 'product';
   constructor(private db: Db) {}

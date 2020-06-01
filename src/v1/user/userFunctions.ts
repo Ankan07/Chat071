@@ -44,7 +44,7 @@ export class UserFunctions {
         );
       res.send({ status: true });
     } catch (error) {
-      console.log("error is ", error);
+      // console.log("error is ", error);
       res.send({ status: false });
     }
   }
@@ -56,18 +56,18 @@ export class UserFunctions {
         .collection(this.COLLECTION)
         .findOne({ $and: [{ email: post.email }, { emailConfirmed: true }] });
       if (update) {
-        console.log("password is ", post.password);
+        // console.log("password is ", post.password);
         const verifypassword = bcrypt.compareSync(
           post.password,
           update.password
         );
-        if (verifypassword == true) {
-          var token = jwt.sign(update, "my-secret");
+        if (verifypassword === true) {
+          const token = jwt.sign(update, "my-secret");
 
           res.send({
             status: true,
             message: "Successfully logged in",
-            token: token,
+            token,
             data: update,
           });
         } else {
@@ -83,7 +83,7 @@ export class UserFunctions {
         });
       }
     } catch (error) {
-      console.log("error is ", error);
+      // console.log("error is ", error);
       res.status(500).send({
         message: "failure",
         error: JSON.stringify(error),
@@ -98,7 +98,7 @@ async forgotpassword(req: Request, res: Response) {
         .collection(this.COLLECTION)
         .findOne({ $and: [{ email: post.email }, { emailConfirmed: true }] });
       if (update) {
- 
+
        await mail(update.email,'forgot password', update._id)
 
        res.send({
@@ -112,13 +112,92 @@ async forgotpassword(req: Request, res: Response) {
         });
       }
     } catch (error) {
-      console.log("error is ", error);
+      // console.log("error is ", error);
       res.status(500).send({
         message: "failure",
         error: JSON.stringify(error),
       });
     }
   }
+async updateUser(req: Request, res: Response) {
+  try {
+    const post = req.body;
+    let queryBody = {};
+    if (post._id) {
+      queryBody = {
+        _id: new ObjectId(post._id),
+      };
+      delete post._id;
+      const result = await this.db
+        .collection(this.COLLECTION)
+        .updateOne(queryBody, {
+          $set: post,
+        });
+      if (result.modifiedCount === 1) {
+        res.send({ status: true, message: "updated an user" });
+      } else {
+        res.send({status: false, message: 'Invalid _id provided'});
+      }
+    } else {
+      res.status(400).send({status: false, message: 'No _id provided'});
+    }
+  } catch (err) {
+    res.status(500).send({status: false, message: 'error occured', error: err});
+  }
+}
+
+async createUser(req: Request, res: Response) {
+  try {
+    const post = req.body;
+    // console.log("email is ", post.email);
+    const finduser = await this.db
+      .collection(this.COLLECTION)
+      .findOne({ email: post.email });
+
+    if (finduser) {
+      // console.log("in here");
+      // user exist
+      if (finduser.emailConfirmed === true) {
+        // console.log("user already");
+        res.send({ status: true, message: "user already exist" });
+      } else {
+        res.send({ status: true, message: "Please confirm email" });
+      }
+    } else {
+      // user doesnot exist
+
+      post.emailConfirmed = false;
+      post.password = bcrypt.hashSync(post.password, 15);
+      const result = await this.db
+        .collection(this.COLLECTION)
+        .insertOne(post);
+
+      const mailstatus = await mail(
+        post.email,
+        "registration",
+        result.ops[0]._id
+      );
+
+      const token = jwt.sign(result.ops[0], "my-secret");
+
+      res.send({
+        status: true,
+        message: "created an user",
+        token,
+        data: result.ops[0],
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      status: false,
+      message: 'some error occured',
+      error: err
+    });
+  }
+}
+
+// deprecated function
+// Use createUser() or updateUser() respectively
 async createOrUpdateUser(req: Request, res: Response) {
     try {
       const post = req.body;
@@ -137,22 +216,22 @@ async createOrUpdateUser(req: Request, res: Response) {
 
         res.send({ status: true, message: "updated an user" });
       } else {
-        console.log("email is ", post.email);
+        // console.log("email is ", post.email);
         const finduser = await this.db
           .collection(this.COLLECTION)
           .findOne({ email: post.email });
 
         if (finduser) {
-          console.log("in here");
-          //user exist
-          if (finduser.emailConfirmed == true) {
-            console.log("user already");
+          // console.log("in here");
+          // user exist
+          if (finduser.emailConfirmed === true) {
+            // console.log("user already");
             res.send({ status: true, message: "user already exist" });
           } else {
             res.send({ status: true, message: "Please confirm email" });
           }
         } else {
-          //user doesnot exist
+          // user doesnot exist
 
           post.emailConfirmed = false;
           post.password = bcrypt.hashSync(post.password, 15);
@@ -166,12 +245,12 @@ async createOrUpdateUser(req: Request, res: Response) {
             result.ops[0]._id
           );
 
-          var token = jwt.sign(result.ops[0], "my-secret");
+          const token = jwt.sign(result.ops[0], "my-secret");
 
           res.send({
             status: true,
             message: "created an user",
-            token: token,
+            token,
             data: result.ops[0],
           });
         }
