@@ -9,8 +9,8 @@ export const mail = async (email: any, type: any, id: any) => {
       service: "Gmail",
       port: 2525,
       auth: {
-        user: "ankanmukherjee1480@gmail.com",
-        pass: "XXXX",
+        user: "Crystoworld@gmail.com",
+        pass: "atk8145%K",
       },
     });
 
