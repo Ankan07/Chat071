@@ -25,7 +25,7 @@ export const mail = async (email: any, type: any, id: any) => {
       html = `<a href='http://localhost:4000/v1/user/confirmation/${token}'>Click here to reset password</a>`;
     }
     const mailOptions = {
-      from: "ankanmukherjee1480@gmail.com",
+      from: "Crystoworld@gmail.com",
       to: email,
       subject: "Essentials",
       text: "Hey",
