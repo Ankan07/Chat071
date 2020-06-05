@@ -16,7 +16,7 @@ export class ProductRoutes {
       .post("", auth, (req, res) => {
         this.functions.addproduct(req, res);
       })
-      .post("/list/:type", auth, (req, res) => {
+      .get("/list/:type", auth, (req, res) => {
         this.functions.listproduct(req, res);
       })
       .post("", auth, (req, res) => {
