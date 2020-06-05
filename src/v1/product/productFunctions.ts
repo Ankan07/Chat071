@@ -22,15 +22,13 @@ export class ProductFunctions {
   async listproduct(req: Request, res: Response) {
     try {
       const post = req.body;
-      const query = req.params.type === "all" ? {} : { type: req.params.type };
+
       const result = await this.db
         .collection(this.COLLECTION)
-        .find(query)
-        .toArray();
+        .find({ type: req.params.type });
 
       res.send({ message: "success", data: result });
     } catch (err) {
-      console.log("error is ", err);
       res.status(500).send({ message: "failure", error: err });
     }
   }
@@ -67,13 +65,11 @@ export class ProductFunctions {
       if (req.params) {
         result = await this.db
           .collection(this.COLLECTION)
-          .find({ $text: { $search: req.params.text } })
-          .toArray();
+          .find({ $text: { $search: req.params.text } });
       }
 
       res.send({ message: "success", data: result });
     } catch (err) {
-      console.log("error is ", err);
       res.status(500).send({ message: "failure", error: err });
     }
   }
