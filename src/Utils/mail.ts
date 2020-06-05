@@ -9,8 +9,8 @@ export const mail = async (email: any, type: any, id: any) => {
       service: "Gmail",
       port: 2525,
       auth: {
-        user: "ankanmukherjee1480@gmail.com",
-        pass: "XXXX",
+        user: "CrystoWorld@gmail.com",
+        pass: "atk8145%K",
       },
     });
 
@@ -25,7 +25,7 @@ export const mail = async (email: any, type: any, id: any) => {
       html = `<a href='http://localhost:4000/v1/user/confirmation/${token}'>Click here to reset password</a>`;
     }
     var mailOptions = {
-      from: "ankanmukherjee1480@gmail.com",
+      from: "CrystoWorld@gmail.com",
       to: email,
       subject: "Essentials",
       text: "Hey",
