@@ -9,23 +9,23 @@ export const mail = async (email: any, type: any, id: any) => {
       service: "Gmail",
       port: 2525,
       auth: {
-        user: "Crystoworld@gmail.com",
+        user: "CrystoWorld@gmail.com",
         pass: "atk8145%K",
       },
     });
     const ip = "13.126.82.139";
     const token = jwt.sign(JSON.stringify(id), "awesome-learning");
 
-    // console.log("token", token);
-    if (type === "registration") {
+    console.log("token", token);
+    if (type == "registration") {
       html = `<a href='http://${ip}:4000/v1/user/confirmation/${token}'>Click here to verify Email</a>`;
     }
 
-    if (type === "forgot password") {
+    if (type == "forgot password") {
       html = `<a href='http://${ip}:4000/v1/user/confirmation/${token}'>Click here to reset password</a>`;
     }
-    const mailOptions = {
-      from: "Crystoworld@gmail.com",
+    var mailOptions = {
+      from: "CrystoWorld@gmail.com",
       to: email,
       subject: "Essentials",
       text: "Hey",

@@ -16,10 +16,10 @@ export class ProductRoutes {
       .post("", auth, (req, res) => {
         this.functions.addproduct(req, res);
       })
-      .get("/list/:type", auth,(req, res) => {
+      .get("/list/:type", auth, (req, res) => {
         this.functions.listproduct(req, res);
       })
-      .put("", auth,(req, res) => {
+      .put("", auth, (req, res) => {
         this.functions.editproduct(req, res);
       })
       .post("/delete/:id", auth, (req, res) => {

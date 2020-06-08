@@ -12,7 +12,7 @@ export class ProductFunctions {
       post.searchKey = searchKey;
 
       const result = await this.db.collection(this.COLLECTION).insertOne(post);
-      this.db.collection(this.COLLECTION).createIndex({ searchKey: "text" });
+
       res.send({ message: "success" });
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
@@ -21,13 +21,15 @@ export class ProductFunctions {
 
   async listproduct(req: Request, res: Response) {
     try {
-      const post = req.body;
-
+      const query = { type: req.params.type };
+      console.log("query", query);
       const result = await this.db
         .collection(this.COLLECTION)
         .find({ type: req.params.type });
 
       res.send({ message: "success", data: result });
+
+      console.log();
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
     }
@@ -61,14 +63,25 @@ export class ProductFunctions {
 
   async searchproduct(req: Request, res: Response) {
     try {
-      let result;
-      if (req.params) {
-        result = await this.db
-          .collection(this.COLLECTION)
-          .find({ $text: { $search: req.params.text } });
-      }
+      const post = req.body;
+      const query =
+        req.params.text === "all"
+          ? {}
+          : {
+              searchKey: {
+                $regex: ` ${req.params.text}|^${req.params.text}`,
+                $options: "$i",
+              },
+            };
+      console.log("query", query);
+      const result = await this.db
+        .collection(this.COLLECTION)
+        .find(query)
+        .toArray();
 
       res.send({ message: "success", data: result });
+
+      console.log();
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
     }
