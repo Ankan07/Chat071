@@ -25,7 +25,8 @@ export class ProductFunctions {
       console.log("query", query);
       const result = await this.db
         .collection(this.COLLECTION)
-        .find({ type: req.params.type });
+        .find({ type: req.params.type })
+        .toArray();
 
       res.send({ message: "success", data: result });
 
