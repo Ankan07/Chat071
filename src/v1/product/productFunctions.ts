@@ -22,7 +22,7 @@ export class ProductFunctions {
   async listproduct(req: Request, res: Response) {
     try {
       const query = { type: req.params.type };
-      console.log("query", query);
+      // console.log("query", query);
       const result = await this.db
         .collection(this.COLLECTION)
         .find({ type: req.params.type })
@@ -30,7 +30,7 @@ export class ProductFunctions {
 
       res.send({ message: "success", data: result });
 
-      console.log();
+      // console.log();
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
     }
@@ -65,7 +65,8 @@ export class ProductFunctions {
   async searchproduct(req: Request, res: Response) {
     try {
       const post = req.body;
-      const query =
+      let query: {searchKey?: any, type?: string} = {};
+      query =
         req.params.text === "all"
           ? {}
           : {
@@ -74,7 +75,10 @@ export class ProductFunctions {
                 $options: "$i",
               },
             };
-      console.log("query", query);
+      if (req.query.category) {
+        query.type = req.query.category as string;
+      }
+      // console.log("query", query);
       const result = await this.db
         .collection(this.COLLECTION)
         .find(query)
@@ -82,7 +86,7 @@ export class ProductFunctions {
 
       res.send({ message: "success", data: result });
 
-      console.log();
+      // console.log();
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
     }
