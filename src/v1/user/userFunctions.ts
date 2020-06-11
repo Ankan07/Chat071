@@ -90,7 +90,7 @@ export class UserFunctions {
       });
     }
   }
-async forgotpassword(req: Request, res: Response) {
+  async forgotpassword(req: Request, res: Response) {
     try {
       const post = req.body;
 
@@ -98,13 +98,12 @@ async forgotpassword(req: Request, res: Response) {
         .collection(this.COLLECTION)
         .findOne({ $and: [{ email: post.email }, { emailConfirmed: true }] });
       if (update) {
+        await mail(update.email, "forgot password", update._id);
 
-       await mail(update.email,'forgot password', update._id)
-
-       res.send({
-        status: true,
-        message: "Please check your email for password recovery link.",
-      });
+        res.send({
+          status: true,
+          message: "Please check your email for password recovery link.",
+        });
       } else {
         res.send({
           status: false,
@@ -119,86 +118,88 @@ async forgotpassword(req: Request, res: Response) {
       });
     }
   }
-async updateUser(req: Request, res: Response) {
-  try {
-    const post = req.body;
-    let queryBody = {};
-    if (post._id) {
-      queryBody = {
-        _id: new ObjectId(post._id),
-      };
-      delete post._id;
-      const result = await this.db
-        .collection(this.COLLECTION)
-        .updateOne(queryBody, {
-          $set: post,
-        });
-      if (result.modifiedCount === 1) {
-        res.send({ status: true, message: "updated an user" });
+  async updateUser(req: Request, res: Response) {
+    try {
+      const post = req.body;
+      let queryBody = {};
+      if (post._id) {
+        queryBody = {
+          _id: new ObjectId(post._id),
+        };
+        delete post._id;
+        const result = await this.db
+          .collection(this.COLLECTION)
+          .updateOne(queryBody, {
+            $set: post,
+          });
+        if (result.modifiedCount === 1) {
+          res.send({ status: true, message: "updated an user" });
+        } else {
+          res.send({ status: false, message: "Invalid _id provided" });
+        }
       } else {
-        res.send({status: false, message: 'Invalid _id provided'});
+        res.status(400).send({ status: false, message: "No _id provided" });
       }
-    } else {
-      res.status(400).send({status: false, message: 'No _id provided'});
+    } catch (err) {
+      res
+        .status(500)
+        .send({ status: false, message: "error occured", error: err });
     }
-  } catch (err) {
-    res.status(500).send({status: false, message: 'error occured', error: err});
   }
-}
 
-async createUser(req: Request, res: Response) {
-  try {
-    const post = req.body;
-    // console.log("email is ", post.email);
-    const finduser = await this.db
-      .collection(this.COLLECTION)
-      .findOne({ email: post.email });
-
-    if (finduser) {
-      // console.log("in here");
-      // user exist
-      if (finduser.emailConfirmed === true) {
-        // console.log("user already");
-        res.send({ status: true, message: "user already exist" });
-      } else {
-        res.send({ status: true, message: "Please confirm email" });
-      }
-    } else {
-      // user doesnot exist
-
-      post.emailConfirmed = false;
-      post.password = bcrypt.hashSync(post.password, 15);
-      const result = await this.db
+  async createUser(req: Request, res: Response) {
+    try {
+      const post = req.body;
+      // console.log("email is ", post.email);
+      const finduser = await this.db
         .collection(this.COLLECTION)
-        .insertOne(post);
+        .findOne({ email: post.email });
 
-      const mailstatus = await mail(
-        post.email,
-        "registration",
-        result.ops[0]._id
-      );
+      if (finduser) {
+        // console.log("in here");
+        // user exist
+        if (finduser.emailConfirmed === true) {
+          // console.log("user already");
+          res.send({ status: true, message: "user already exist" });
+        } else {
+          res.send({ status: true, message: "Please confirm email" });
+        }
+      } else {
+        // user doesnot exist
 
-      const token = jwt.sign(result.ops[0], "my-secret");
+        post.emailConfirmed = false;
+        post.password = bcrypt.hashSync(post.password, 5);
+        const result = await this.db
+          .collection(this.COLLECTION)
+          .insertOne(post);
 
-      res.send({
-        status: true,
-        message: "created an user",
-        token,
-        data: result.ops[0],
+        const mailstatus = await mail(
+          post.email,
+          "registration",
+          result.ops[0]._id
+        );
+
+        const token = jwt.sign(result.ops[0], "my-secret");
+
+        res.send({
+          status: true,
+          message: "created an user",
+          token,
+          data: result.ops[0],
+        });
+      }
+    } catch (err) {
+      res.status(500).send({
+        status: false,
+        message: "some error occured",
+        error: err,
       });
     }
-  } catch (err) {
-    res.status(500).send({
-      status: false,
-      message: 'some error occured',
-      error: err
-    });
   }
-}
 
-// deprecated function
-// Use createUser() or updateUser() respectively
-async createOrUpdateUser(req: Request, res: Response) {
+  // deprecated function
+  // Use createUser() or updateUser() respectively
+  async createOrUpdateUser(req: Request, res: Response) {
     try {
       const post = req.body;
       let queryBody = {};
