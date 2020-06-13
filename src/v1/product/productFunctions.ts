@@ -65,7 +65,7 @@ export class ProductFunctions {
   async searchproduct(req: Request, res: Response) {
     try {
       const post = req.body;
-      let query: {searchKey?: any, type?: string} = {};
+      let query: { searchKey?: any; type?: string } = {};
       query =
         req.params.text === "all"
           ? {}
@@ -87,6 +87,15 @@ export class ProductFunctions {
       res.send({ message: "success", data: result });
 
       // console.log();
+    } catch (err) {
+      res.status(500).send({ message: "failure", error: err });
+    }
+  }
+
+  async homepage(req: Request, res: Response) {
+    try {
+      const result = await this.db.collection("featured").find({}).toArray();
+      res.send({ message: "success", data: result });
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
     }

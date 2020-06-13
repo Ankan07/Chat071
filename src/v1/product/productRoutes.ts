@@ -27,6 +27,9 @@ export class ProductRoutes {
       })
       .get("/search/:text", auth, (req, res) => {
         this.functions.searchproduct(req, res);
+      })
+      .get("/homepage", auth, (req, res) => {
+        this.functions.homepage(req, res);
       });
   }
 }
