@@ -77,10 +77,22 @@ export class UserFunctions {
           });
         }
       } else {
-        res.send({
-          status: false,
-          message: "User Not Found",
-        });
+        const result = await this.db
+          .collection(this.COLLECTION)
+          .findOne({ $and: [{ email: post.email }] });
+        if (result) {
+          if (result.emailConfirmed == false) {
+            res.send({
+              status: false,
+              message: "Please verify your email!",
+            });
+          }
+        } else {
+          res.send({
+            status: false,
+            message: "User Not Found",
+          });
+        }
       }
     } catch (error) {
       // console.log("error is ", error);
