@@ -42,6 +42,9 @@ private functions: UserFunctions;
       .get("/:id", auth,(req, res) => {
         this.functions.getuser(req, res);
       })
+      .post('/address', auth, (req, res) => {
+        this.functions.addAddress(req, res);
+      })
       .get("/confirmation/:id",(req, res) => {
         this.functions.routeback(req, res);
       })

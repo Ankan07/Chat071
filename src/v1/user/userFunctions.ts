@@ -23,8 +23,7 @@ export class UserFunctions {
 
       const result = await this.db
         .collection(this.COLLECTION)
-        .find(queryBody)
-        .toArray();
+        .findOne(queryBody);
 
       res.send({ message: "success", data: result });
     } catch (err) {
@@ -81,7 +80,7 @@ export class UserFunctions {
           .collection(this.COLLECTION)
           .findOne({ $and: [{ email: post.email }] });
         if (result) {
-          if (result.emailConfirmed == false) {
+          if (result.emailConfirmed === false) {
             res.send({
               status: false,
               message: "Please verify your email!",
@@ -209,6 +208,44 @@ export class UserFunctions {
     }
   }
 
+  async addAddress(req: Request, res: Response) {
+    try {
+      const body: {id: string, address: any} = req.body;
+      if (!body.id) {
+        res.status(400).send({
+          status: false,
+          message: 'Missing field userId'
+        });
+      }
+
+      if (!body.address) {
+        res.status(400).send({
+          status: false,
+          message: 'Missing field address'
+        });
+      }
+
+      await this.db
+      .collection(this.COLLECTION)
+      .updateOne({'_id': new ObjectId(body.id)},
+      {
+        $push: {
+          address: body.address
+        }
+      })
+
+      res.send({
+        status: true,
+        message: "Address saved to database!",
+      });
+    } catch (err) {
+      res.status(500).send({
+        status: false,
+        message: "some error occured",
+        error: err,
+      });
+    }
+  }
   // deprecated function
   // Use createUser() or updateUser() respectively
   async createOrUpdateUser(req: Request, res: Response) {
