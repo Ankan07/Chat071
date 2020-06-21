@@ -54,5 +54,11 @@ private functions: UserFunctions;
       .post("/forgotpassword",(req, res) => {
         this.functions.forgotpassword(req, res);
       })
+      .get('/reset-password/:id', (req, res) => {
+        this.functions.resetPassword(req, res);
+      })
+      .post('/reset-password/:id', (req, res) => {
+        this.functions.resetPassword(req, res);
+      })
   }
 }

@@ -41,7 +41,7 @@ export class UserFunctions {
           { _id: new ObjectId(decode) },
           { $set: { emailConfirmed: true } }
         );
-      res.send({ status: true });
+      res.sendFile(__dirname + '/html/email_verification_successful.html');
     } catch (error) {
       // console.log("error is ", error);
       res.send({ status: false });
@@ -310,6 +310,18 @@ export class UserFunctions {
         message: "failure",
         error: JSON.stringify(error),
       });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    if (req.method === 'GET') {
+      res.sendFile(__dirname + '/html/reset-password.html');
+    } else {
+      // password form submitted
+
+      const newpass = req.body.password;
+      // TODO: Replace password in database
+      res.sendFile(__dirname + '/html/password-reset-successful.html');
     }
   }
 }
