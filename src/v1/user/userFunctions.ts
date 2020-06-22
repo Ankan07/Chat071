@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { mail } from "../../Utils/mail";
 import bcrypt from "bcrypt";
+import path from "path";
 export class UserFunctions {
   COLLECTION = "user";
   constructor(private db: Db) {}
@@ -34,14 +35,41 @@ export class UserFunctions {
     try {
       let decode = jwt.verify(req.params.id, "awesome-learning");
       decode = decode.toString().substring(1, decode.toString().length - 1);
-
-      const update = await this.db
-        .collection(this.COLLECTION)
-        .updateOne(
-          { _id: new ObjectId(decode) },
-          { $set: { emailConfirmed: true } }
+      if (req.query.type == "emailverification") {
+        const update = await this.db
+          .collection(this.COLLECTION)
+          .updateOne(
+            { _id: new ObjectId(decode) },
+            { $set: { emailConfirmed: true } }
+          );
+        res.sendFile(
+          path.join(
+            __dirname,
+            "../../../public/html",
+            "email_verification_successful.html"
+          )
         );
-      res.sendFile(__dirname + '/html/email_verification_successful.html');
+      } else if (req.query.type == "forgotpassword") {
+        if (req.method == "GET") {
+          res.sendFile(
+            path.join(__dirname, "../../../public/html", "reset-password.html")
+          );
+        } else if (req.method == "POST") {
+          const update = await this.db
+            .collection(this.COLLECTION)
+            .updateOne(
+              { _id: new ObjectId(decode) },
+              { $set: { password: bcrypt.hashSync(req.body.password, 5) } }
+            );
+          res.sendFile(
+            path.join(
+              __dirname,
+              "../../../public/html",
+              "password-reset-password.html"
+            )
+          );
+        }
+      }
     } catch (error) {
       // console.log("error is ", error);
       res.send({ status: false });
@@ -50,16 +78,24 @@ export class UserFunctions {
   async login(req: Request, res: Response) {
     try {
       const post = req.body;
+      if (!post.password) {
+        post.password = "";
+      }
 
       const update = await this.db
         .collection(this.COLLECTION)
         .findOne({ $and: [{ email: post.email }, { emailConfirmed: true }] });
       if (update) {
         // console.log("password is ", post.password);
-        const verifypassword = bcrypt.compareSync(
-          post.password,
-          update.password
-        );
+        let verifypassword: boolean;
+        if (post.signInMethod == "email") {
+          verifypassword = bcrypt.compareSync(post.password, update.password);
+        } else if (post.signInMethod == "google") {
+          verifypassword = true;
+        } else {
+          verifypassword = false;
+        }
+
         if (verifypassword === true) {
           const token = jwt.sign(update, "my-secret");
 
@@ -70,10 +106,17 @@ export class UserFunctions {
             data: update,
           });
         } else {
-          res.send({
-            status: false,
-            message: "Invalid Credentials",
-          });
+          if (update.signInMethod == "google") {
+            res.send({
+              status: false,
+              message: "You have already Signed up using Google",
+            });
+          } else {
+            res.send({
+              status: false,
+              message: "Invalid Credentials",
+            });
+          }
         }
       } else {
         const result = await this.db
@@ -162,6 +205,8 @@ export class UserFunctions {
     try {
       const post = req.body;
       // console.log("email is ", post.email);
+      //signInMethod --> in req.body email/google
+
       const finduser = await this.db
         .collection(this.COLLECTION)
         .findOne({ email: post.email });
@@ -179,16 +224,22 @@ export class UserFunctions {
         // user doesnot exist
 
         post.emailConfirmed = false;
-        post.password = bcrypt.hashSync(post.password, 5);
+        if (req.body.signInMethod == "mail") {
+          post.password = bcrypt.hashSync(post.password, 5);
+        }
+        if (req.body.signInMethod == "google") {
+          post.emailConfirmed = true;
+        }
         const result = await this.db
           .collection(this.COLLECTION)
           .insertOne(post);
-
-        const mailstatus = await mail(
-          post.email,
-          "registration",
-          result.ops[0]._id
-        );
+        if (req.body.signInMethod == "mail") {
+          const mailstatus = await mail(
+            post.email,
+            "registration",
+            result.ops[0]._id
+          );
+        }
 
         const token = jwt.sign(result.ops[0], "my-secret");
 
@@ -210,29 +261,29 @@ export class UserFunctions {
 
   async addAddress(req: Request, res: Response) {
     try {
-      const body: {id: string, address: any} = req.body;
+      const body: { id: string; address: any } = req.body;
       if (!body.id) {
         res.status(400).send({
           status: false,
-          message: 'Missing field userId'
+          message: "Missing field userId",
         });
       }
 
       if (!body.address) {
         res.status(400).send({
           status: false,
-          message: 'Missing field address'
+          message: "Missing field address",
         });
       }
 
-      await this.db
-      .collection(this.COLLECTION)
-      .updateOne({'_id': new ObjectId(body.id)},
-      {
-        $push: {
-          address: body.address
+      await this.db.collection(this.COLLECTION).updateOne(
+        { _id: new ObjectId(body.id) },
+        {
+          $push: {
+            address: body.address,
+          },
         }
-      })
+      );
 
       res.send({
         status: true,
@@ -310,18 +361,6 @@ export class UserFunctions {
         message: "failure",
         error: JSON.stringify(error),
       });
-    }
-  }
-
-  async resetPassword(req: Request, res: Response) {
-    if (req.method === 'GET') {
-      res.sendFile(__dirname + '/html/reset-password.html');
-    } else {
-      // password form submitted
-
-      const newpass = req.body.password;
-      // TODO: Replace password in database
-      res.sendFile(__dirname + '/html/password-reset-successful.html');
     }
   }
 }
