@@ -65,7 +65,7 @@ export class UserFunctions {
             path.join(
               __dirname,
               "../../../public/html",
-              "password-reset-password.html"
+              "password-reset-successful.html"
             )
           );
         }
