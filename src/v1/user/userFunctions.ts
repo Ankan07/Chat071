@@ -110,7 +110,7 @@ export class UserFunctions {
           if (update.signInMethod == "google") {
             res.send({
               status: false,
-              message: "You have already Signed up using Google",
+              message: "You have already signed up using Google",
             });
           } else {
             res.send({
@@ -153,12 +153,18 @@ export class UserFunctions {
         .collection(this.COLLECTION)
         .findOne({ $and: [{ email: post.email }, { emailConfirmed: true }] });
       if (update) {
-        await mail(update.email, "forgot password", update._id);
-
-        res.send({
-          status: true,
-          message: "Please check your email for password recovery link.",
-        });
+        if (update.signInMethod == "google") {
+          res.send({
+            status: true,
+            message: "You have Google signed into this email!",
+          });
+        } else if (update.signInMethod == "mail") {
+          await mail(update.email, "forgot password", update._id);
+          res.send({
+            status: true,
+            message: "Please check your email for password recovery link.",
+          });
+        }
       } else {
         res.send({
           status: false,
