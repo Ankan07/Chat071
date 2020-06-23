@@ -217,7 +217,16 @@ export class UserFunctions {
         // user exist
         if (finduser.emailConfirmed === true) {
           // console.log("user already");
-          res.send({ status: true, message: "user already exist" });
+          if (finduser.signInMethod == "google")
+            res.send({
+              status: true,
+              message: "You have already signed up using Google",
+            });
+          else if (finduser.signInMethod == "mail")
+            res.send({
+              status: true,
+              message: "You have already signed up using this email",
+            });
         } else {
           res.send({ status: true, message: "Please confirm email" });
         }
