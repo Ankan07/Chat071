@@ -158,7 +158,7 @@ export class UserFunctions {
             status: true,
             message: "You have Google signed into this email!",
           });
-        } else if (update.signInMethod == "mail") {
+        } else if (update.signInMethod == "email") {
           await mail(update.email, "forgot password", update._id);
           res.send({
             status: true,
@@ -228,7 +228,7 @@ export class UserFunctions {
               status: true,
               message: "You have already signed up using Google",
             });
-          else if (finduser.signInMethod == "mail")
+          else if (finduser.signInMethod == "email")
             res.send({
               status: true,
               message: "You have already signed up using this email",
@@ -240,7 +240,7 @@ export class UserFunctions {
         // user doesnot exist
 
         post.emailConfirmed = false;
-        if (req.body.signInMethod == "mail") {
+        if (req.body.signInMethod == "email") {
           post.password = bcrypt.hashSync(post.password, 5);
         }
         if (req.body.signInMethod == "google") {
@@ -249,7 +249,7 @@ export class UserFunctions {
         const result = await this.db
           .collection(this.COLLECTION)
           .insertOne(post);
-        if (req.body.signInMethod == "mail") {
+        if (req.body.signInMethod == "email") {
           const mailstatus = await mail(
             post.email,
             "registration",
@@ -260,7 +260,7 @@ export class UserFunctions {
         delete temp["password"];
         const token = jwt.sign(result.ops[0], "my-secret");
         let message;
-        if (req.body.signInMethod == "mail")
+        if (req.body.signInMethod == "email")
           message = "An email has been sent!. Please Confirm to continue";
         else if (req.body.signInMethod == "google")
           message = "Created an User ";
