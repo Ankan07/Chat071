@@ -97,6 +97,7 @@ export class UserFunctions {
         }
 
         if (verifypassword === true) {
+          delete update["password"];
           const token = jwt.sign(update, "my-secret");
 
           res.send({
@@ -240,14 +241,20 @@ export class UserFunctions {
             result.ops[0]._id
           );
         }
-
+        let temp = result.ops[0];
+        delete temp["password"];
         const token = jwt.sign(result.ops[0], "my-secret");
+        let message;
+        if (req.body.signInMethod == "mail")
+          message = "An email has been sent!. Please Confirm to continue";
+        else if (req.body.signInMethod == "google")
+          message = "Created an User ";
 
         res.send({
           status: true,
-          message: "created an user",
+          message: message,
           token,
-          data: result.ops[0],
+          data: temp,
         });
       }
     } catch (err) {
