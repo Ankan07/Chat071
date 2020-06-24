@@ -8,6 +8,11 @@ export class UserFunctions {
   COLLECTION = "user";
   constructor(private db: Db) {}
 
+  //error codes:
+  //0: Successfully logged in
+  //1: Invalid Credentials
+  //2: Please verify your email
+  //3: User Not Found
   async getuser(req: Request, res: Response) {
     try {
       let queryBody = {};
@@ -105,6 +110,7 @@ export class UserFunctions {
             message: "Successfully logged in",
             token,
             data: update,
+            errorCode: 0,
           });
         } else {
           if (update.signInMethod == "google") {
@@ -116,6 +122,7 @@ export class UserFunctions {
             res.send({
               status: false,
               message: "Invalid Credentials",
+              errorCode: 1,
             });
           }
         }
@@ -128,12 +135,14 @@ export class UserFunctions {
             res.send({
               status: false,
               message: "Please verify your email!",
+              errorCode: 2,
             });
           }
         } else {
           res.send({
             status: false,
             message: "User Not Found",
+            errorCode: 3,
           });
         }
       }
@@ -169,6 +178,7 @@ export class UserFunctions {
         res.send({
           status: false,
           message: "User Not Found",
+          errorCode: 3,
         });
       }
     } catch (error) {
