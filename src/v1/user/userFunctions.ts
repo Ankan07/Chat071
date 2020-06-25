@@ -247,6 +247,7 @@ export class UserFunctions {
           res.send({ status: true, message: "Please confirm email" });
         }
       } else {
+        let token;
         // user doesnot exist
 
         post.emailConfirmed = false;
@@ -268,12 +269,13 @@ export class UserFunctions {
         }
         let temp = result.ops[0];
         delete temp["password"];
-        const token = jwt.sign(result.ops[0], "my-secret");
         let message;
         if (req.body.signInMethod == "email")
           message = "An email has been sent!. Please Confirm to continue";
-        else if (req.body.signInMethod == "google")
+        else if (req.body.signInMethod == "google") {
           message = "Created an User ";
+          token = jwt.sign(result.ops[0], "my-secret");
+        }
 
         res.send({
           status: true,
