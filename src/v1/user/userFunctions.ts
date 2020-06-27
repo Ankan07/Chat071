@@ -235,12 +235,12 @@ export class UserFunctions {
           // console.log("user already");
           if (finduser.signInMethod == "google")
             res.send({
-              status: true,
+              status: false,
               message: "You have already signed up using Google",
             });
           else if (finduser.signInMethod == "email")
             res.send({
-              status: true,
+              status: false,
               message: "You have already signed up using this email",
             });
         } else {
