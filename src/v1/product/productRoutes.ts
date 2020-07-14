@@ -30,6 +30,27 @@ export class ProductRoutes {
       })
       .get("/homepage", auth, (req, res) => {
         this.functions.homepage(req, res);
+      })
+      .post("/category", (req, res) => {
+        this.functions.addcategory(req, res);
+      })
+      .post("/category/delete", (req, res) => {
+        this.functions.deletecategory(req, res);
+      })
+      .get("/category", (req, res) => {
+        this.functions.getcategories(req, res);
+      })
+      .post("/category/:id", (req, res) => {
+        this.functions.updatecategories(req, res);
+      })
+      .get("/category/items/:type", (req, res) => {
+        this.functions.getfeatureditemsforacategory(req, res);
+      })
+      .post("/category/items/:type", (req, res) => {
+        this.functions.updatefeatureditemsforcategory(req, res);
+      })
+      .post("/category/items/delete/:type", (req, res) => {
+        this.functions.deleteallproductsforcategory(req, res);
       });
   }
 }

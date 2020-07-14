@@ -176,14 +176,16 @@ export class ProductFunctions {
     try {
       const resultcategory = await this.db
         .collection("categories")
-        .find({ name: req.body.name });
-      if (resultcategory) {
+        .find({ name: req.body.name })
+        .toArray();
+      console.log("result vat", resultcategory);
+      if (resultcategory.length !== 0) {
         res.send({ message: "category already exixst" });
       } else {
         const result = await this.db
           .collection("categories")
           .insertOne(req.body);
-        res.send({ message: "success", data: result });
+        res.send({ message: "success", data: result["ops"] });
       }
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
@@ -196,12 +198,12 @@ export class ProductFunctions {
         .collection("categories")
         .find({ name: req.body.name });
       if (resultcategory) {
-        res.send({ message: "category already exixst" });
-      } else {
         const result = await this.db
           .collection("categories")
-          .insertOne(req.body);
-        res.send({ message: "success", data: result });
+          .deleteOne({ name: req.body.name });
+        res.send({ message: "success" });
+      } else {
+        res.send({ message: "category does not exist" });
       }
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
@@ -220,24 +222,30 @@ export class ProductFunctions {
     // 1. oldname
     // 2. newname
     // 3. id
-    const updatecategory = await this.db
-      .collection("categories")
-      .updateOne(
+    try {
+      const updatecategory = await this.db.collection("categories").updateOne(
         { _id: new ObjectId(req.params.id) },
-        { $set: { name: req.params.name } }
+        {
+          $set: { name: req.body.newname, description: req.body.description },
+        }
       );
-    const updatecategoryforallfeatureditems = await this.db
-      .collection("featured")
-      .updateMany(
-        { name: req.params.oldname },
-        { $set: { type: req.params.name } }
-      );
-    const updatecategoryforallproducts = await this.db
-      .collection(this.COLLECTION)
-      .updateMany(
-        { name: req.params.oldname },
-        { $set: { type: req.params.name } }
-      );
+      const updatecategoryforallfeatureditems = await this.db
+        .collection("featured")
+        .updateMany(
+          { type: req.body.oldname },
+          { $set: { type: req.body.newname } }
+        );
+      const updatecategoryforallproducts = await this.db
+        .collection(this.COLLECTION)
+        .updateMany(
+          { type: req.body.oldname },
+          { $set: { type: req.body.newname } }
+        );
+
+      res.send({ message: "success" });
+    } catch (err) {
+      res.status(500).send({ message: "failure", error: err });
+    }
   }
 
   async getfeatureditemsforacategory(req: Request, res: Response) {
@@ -253,6 +261,9 @@ export class ProductFunctions {
   }
   async updatefeatureditemsforcategory(req: Request, res: Response) {
     try {
+      const delete_items = await this.db
+        .collection("featured")
+        .deleteMany({ type: req.params.type });
       const result = await this.db
         .collection("featured")
         .insertMany(req.body.items);
@@ -265,11 +276,11 @@ export class ProductFunctions {
     try {
       const result = await this.db
         .collection("featured")
-        .deleteMany({ type: req.params.category });
+        .deleteMany({ type: req.params.type });
 
       const result2 = await this.db
         .collection("product")
-        .deleteMany({ type: req.params.category });
+        .deleteMany({ type: req.params.type });
 
       res.send({ message: "success" });
     } catch (err) {
