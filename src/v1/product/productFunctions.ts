@@ -174,6 +174,7 @@ export class ProductFunctions {
   }
   async addcategory(req: Request, res: Response) {
     try {
+      req.body.name = req.body.name.toUpperCase();
       const resultcategory = await this.db
         .collection("categories")
         .find({ name: req.body.name })
@@ -212,6 +213,16 @@ export class ProductFunctions {
   async getcategories(req: Request, res: Response) {
     try {
       const result = await this.db.collection("categories").find({}).toArray();
+      // const categorynumber = await this.db.collection("products").aggregate([
+      //   {
+      //     $group: {
+      //       _id: "$type",
+      //       count: {
+      //         $sum: 1,
+      //       },
+      //     },
+      //   },
+      // ]);
       res.send({ message: "success", data: result });
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
