@@ -168,9 +168,9 @@ export class OrderFunctions {
           currency: "INR",
         }
       );
-      const result2 = await this.db.collection("payments").insertOne(result);
+      //   const result2 = await this.db.collection("payments").insertOne(result);
 
-      res.send({ message: " payment success" });
+      res.send({ message: " payment success", result: result });
     } catch (err) {
       res
         .status(500)
