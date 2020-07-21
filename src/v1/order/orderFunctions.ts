@@ -182,7 +182,7 @@ export class OrderFunctions {
         {
           $set: {
             paymentId: insert_into_payments.ops[0]._id,
-            orderPaymentStatus: "completed",
+            orderPaymentStatus: "complete",
           },
         }
       );
