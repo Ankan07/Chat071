@@ -78,7 +78,7 @@ export class OrderFunctions {
         res.send({
           message: "Successfully created an order",
           status: true,
-          data: result["ops"],
+          data: result["ops"][0],
         });
       }
     } catch (err) {
