@@ -160,18 +160,36 @@ export class OrderFunctions {
   async capturepayment(req: Request, res: Response) {
     try {
       let payment_id = req.params.payment_id;
+      const order = await this.db
+        .collection("order")
+        .findOne({ _id: new ObjectId(req.body.order_id) });
+      const amount = Number(order.totalPrice);
 
-      const result = await axios.post(
+      const capture_payment = await axios.post(
         `https://rzp_test_eocEawhmisMu23:XrScEMqT58hMuZ7peluZ2UtS@api.razorpay.com/v1/payments/${payment_id}/capture`,
         {
-          amount: Number(req.body.amount),
+          amount: amount,
           currency: "INR",
         }
       );
-      //   const result2 = await this.db.collection("payments").insertOne(result);
+      console.log("result is ", capture_payment.data);
+      const insert_into_payments = await this.db
+        .collection("payments")
+        .insertOne(capture_payment.data);
 
-      res.send({ message: " payment success", result: result });
+      const update_order = await this.db.collection("order").updateOne(
+        { _id: new ObjectId(req.body.order_id) },
+        {
+          $set: {
+            paymentId: insert_into_payments.ops[0]._id,
+            orderPaymentStatus: "completed",
+          },
+        }
+      );
+
+      res.send({ message: "payment success" });
     } catch (err) {
+      console.log("err is ", err);
       res
         .status(500)
         .send({ message: "payment failure", error: JSON.stringify(err) });
