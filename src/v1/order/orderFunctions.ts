@@ -62,11 +62,24 @@ export class OrderFunctions {
         res.send({ message: "successfully updated an order", status: true });
       } else {
         // create a new order
+
+        const array = post.cartItems;
+        let sum: any = 0;
+        array.forEach((element: any) => {
+          sum +=
+            Number(element.quantity) * Number(element.variant.discountedPrice);
+        });
+        post.totalPrice = sum;
+
         const result = await this.db
           .collection(this.COLLECTION)
           .insertOne(post);
 
-        res.send({ message: "Successfully created an order", status: true });
+        res.send({
+          message: "Successfully created an order",
+          status: true,
+          data: result["ops"],
+        });
       }
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
@@ -105,7 +118,6 @@ export class OrderFunctions {
       amount: amount,
       currency,
       receipt: "random",
-      payment_capture,
     };
     console.log("in heer");
 
@@ -160,7 +172,9 @@ export class OrderFunctions {
 
       res.send({ message: " payment success" });
     } catch (err) {
-      res.status(500).send({ message: "payment failure" });
+      res
+        .status(500)
+        .send({ message: "payment failure", error: JSON.stringify(err) });
     }
   }
 }
