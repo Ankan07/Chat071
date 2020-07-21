@@ -154,7 +154,7 @@ export class OrderFunctions {
       }
       res.json({ status: "ok" });
     } catch (err) {
-      res.send(err);
+      res.status(500).send(err);
     }
   }
   async capturepayment(req: Request, res: Response) {
@@ -187,12 +187,16 @@ export class OrderFunctions {
         }
       );
 
-      res.send({ message: "payment success" });
+      res.send({ message: "payment success", status: true });
     } catch (err) {
       console.log("err is ", err);
       res
         .status(500)
-        .send({ message: "payment failure", error: JSON.stringify(err) });
+        .send({
+          message: "payment failure",
+          error: JSON.stringify(err),
+          status: false,
+        });
     }
   }
   async deleteorderbyid(req: Request, res: Response) {
@@ -202,7 +206,7 @@ export class OrderFunctions {
         .deleteOne({ _id: new ObjectId(req.params.id) });
       res.send({ message: "deleted" });
     } catch (err) {
-      res.send({ message: "error", error: err });
+      res.status(500).send({ message: "error", error: err });
     }
   }
 }
