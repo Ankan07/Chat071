@@ -166,7 +166,7 @@ export class OrderFunctions {
       const order = await this.db
         .collection("order")
         .findOne({ _id: new ObjectId(req.body.order_id) });
-      const amount = Number(order.totalPrice);
+      const amount = Number(order.totalPrice) * 100;
 
       const capture_payment = await axios.post(
         `https://rzp_test_eocEawhmisMu23:XrScEMqT58hMuZ7peluZ2UtS@api.razorpay.com/v1/payments/${payment_id}/capture`,
