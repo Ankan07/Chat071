@@ -176,27 +176,30 @@ export class OrderFunctions {
       const insert_into_payments = await this.db
         .collection("payments")
         .insertOne(capture_payment.data);
+      if (capture_payment.data.captured) {
+        const update_order = await this.db.collection("order").updateOne(
+          { _id: new ObjectId(req.body.order_id) },
+          {
+            $set: {
+              paymentId: insert_into_payments.ops[0]._id,
+              orderPaymentStatus: "complete",
+            },
+          }
+        );
+      } else {
+        const delete_order = await this.db
+          .collection("order")
+          .deleteOne({ _id: new ObjectId(req.body.order_id) });
+      }
 
-      const update_order = await this.db.collection("order").updateOne(
-        { _id: new ObjectId(req.body.order_id) },
-        {
-          $set: {
-            paymentId: insert_into_payments.ops[0]._id,
-            orderPaymentStatus: "complete",
-          },
-        }
-      );
-
-      res.send({ message: "payment success", status: true });
+      res.send({ captured: capture_payment.data.captured });
     } catch (err) {
       console.log("err is ", err);
-      res
-        .status(500)
-        .send({
-          message: "payment failure",
-          error: JSON.stringify(err),
-          status: false,
-        });
+      res.status(500).send({
+        message: "payment failure",
+        error: JSON.stringify(err),
+        status: false,
+      });
     }
   }
   async deleteorderbyid(req: Request, res: Response) {
