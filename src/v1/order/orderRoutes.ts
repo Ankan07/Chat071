@@ -42,6 +42,9 @@ export class OrderRoutes {
       .post("/verifyorder", (req, res) => {
         this.functions.verifyorderrazorpay(req, res);
       })
+      .post("/capturepayment/:payment_id", (req, res) => {
+        this.functions.capturepayment(req, res);
+      })
       .get("", auth, (req, res) => {
         this.functions.getOrderByCriteria(req, res);
       })

@@ -2,6 +2,7 @@ import { Db, ObjectId } from "mongodb";
 import { Request, Response } from "express";
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import axios from "axios";
 export class OrderFunctions {
   COLLECTION = "order";
   constructor(private db: Db) {}
@@ -136,14 +137,30 @@ export class OrderFunctions {
       if (digest === req.headers["x-razorpay-signature"]) {
         console.log("request is legit");
         // process it
-
-        const result = await this.db.collection("payments").insertOne(req.body);
       } else {
         console.log("not valid");
       }
       res.json({ status: "ok" });
     } catch (err) {
       res.send(err);
+    }
+  }
+  async capturepayment(req: Request, res: Response) {
+    try {
+      let payment_id = req.params.payment_id;
+
+      const result = await axios.post(
+        `https://rzp_test_eocEawhmisMu23:XrScEMqT58hMuZ7peluZ2UtS@api.razorpay.com/v1/payments/${payment_id}/capture`,
+        {
+          amount: Number(req.body.amount),
+          currency: "INR",
+        }
+      );
+      const result2 = await this.db.collection("payments").insertOne(result);
+
+      res.send({ message: " payment success" });
+    } catch (err) {
+      res.status(500).send({ message: "payment failure" });
     }
   }
 }
