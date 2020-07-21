@@ -45,6 +45,9 @@ export class OrderRoutes {
       .post("/capturepayment/:payment_id", (req, res) => {
         this.functions.capturepayment(req, res);
       })
+      .post("/delete/:id", (req, res) => {
+        this.functions.deleteorderbyid(req, res);
+      })
       .get("", auth, (req, res) => {
         this.functions.getOrderByCriteria(req, res);
       })

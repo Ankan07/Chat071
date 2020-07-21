@@ -195,4 +195,14 @@ export class OrderFunctions {
         .send({ message: "payment failure", error: JSON.stringify(err) });
     }
   }
+  async deleteorderbyid(req: Request, res: Response) {
+    try {
+      const delete_order = await this.db
+        .collection("order")
+        .deleteOne({ _id: new ObjectId(req.params.id) });
+      res.send({ message: "deleted" });
+    } catch (err) {
+      res.send({ message: "error", error: err });
+    }
+  }
 }
