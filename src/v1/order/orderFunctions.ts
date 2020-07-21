@@ -130,6 +130,9 @@ export class OrderFunctions {
         amount: response.amount,
       });
     } catch (error) {
+      res.send({
+        message: "error",
+      });
       console.log(error);
     }
   }
