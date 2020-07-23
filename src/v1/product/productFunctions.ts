@@ -34,7 +34,7 @@ export class ProductFunctions {
       });
       let images_array: any = [];
       let images = req.body.images;
-
+      fs.mkdirSync('data');
       images.forEach((element: any) => {
         fs.writeFileSync(`data/image-${new Date().getTime()}.png`, element, {
           encoding: "base64",
