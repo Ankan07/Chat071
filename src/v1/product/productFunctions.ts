@@ -22,8 +22,8 @@ export class ProductFunctions {
   }
   async addproduct(req: Request, res: Response) {
     try {
-      let post = req.body;
-      let searchKey = post.name;
+      const post = req.body;
+      const searchKey = post.name;
 
       post.searchKey = searchKey;
       const s3 = new aws.S3({});
@@ -33,8 +33,11 @@ export class ProductFunctions {
         secretAccessKey: "EHKf96swf9sbHuYbH5G4tuAZ1L8SdjIA5To9Lits",
       });
       let images_array: any = [];
-      let images = req.body.images;
-      fs.mkdirSync('data');
+      const images = req.body.images;
+
+      if (!fs.existsSync('data')){
+        fs.mkdirSync('data');
+      }
       images.forEach((element: any) => {
         fs.writeFileSync(`data/image-${new Date().getTime()}.png`, element, {
           encoding: "base64",
@@ -54,14 +57,14 @@ export class ProductFunctions {
           thumb_element = element;
         }
 
-        let params = {
+        const params = {
           ACL: "public-read",
           Bucket: "crystoapp",
           Body: fs.createReadStream(`data/${element}`),
           Key: `${element}`,
         };
 
-        let result = await this.uploads3(params);
+        const result = await this.uploads3(params);
 
         fs.unlinkSync(`data/${element}`);
       });
@@ -82,11 +85,11 @@ export class ProductFunctions {
 
       thumb = result;
       post.thumb = thumb;
-      post["images"] = images_array;
+      post.images = images_array;
 
       const product = await this.db.collection(this.COLLECTION).insertOne(post);
 
-      res.send({ message: "success", data: product["ops"] });
+      res.send({ message: "success", data: product.ops });
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
     }
@@ -187,7 +190,7 @@ export class ProductFunctions {
         const result = await this.db
           .collection("categories")
           .insertOne(req.body);
-        res.send({ message: "success", data: result["ops"] });
+        res.send({ message: "success", data: result.ops });
       }
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
@@ -230,7 +233,7 @@ export class ProductFunctions {
     }
   }
   async updatecategories(req: Request, res: Response) {
-    //three params
+    // three params
     // 1. oldname
     // 2. newname
     // 3. id
