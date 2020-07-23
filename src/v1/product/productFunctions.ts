@@ -34,12 +34,13 @@ export class ProductFunctions {
       });
       let images_array: any = [];
       let images = req.body.images;
-
+      console.log("na   na n");
       images.forEach((element: any) => {
         fs.writeFileSync(`data/image-${new Date().getTime()}.png`, element, {
           encoding: "base64",
         });
       });
+      console.log("ba ba ");
       const files = fs.readdirSync("data");
       console.log("files is ", files);
       files.forEach((element: any) => {
