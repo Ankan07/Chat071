@@ -40,6 +40,7 @@ export class ProductFunctions {
           encoding: "base64",
         });
       });
+      console.log("ba ba ");
       const files = fs.readdirSync("data");
       console.log("files is ", files);
       files.forEach((element: any) => {
