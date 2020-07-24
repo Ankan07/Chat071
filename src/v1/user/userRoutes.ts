@@ -53,6 +53,9 @@ export class UserRoutes {
         .post("/login", (req, res) => {
           this.functions.login(req, res);
         })
+        .post("/adminlogin", (req, res) => {
+          this.functions.adminlogin(req, res);
+        })
         .post("/forgotpassword", (req, res) => {
           this.functions.forgotpassword(req, res);
         })

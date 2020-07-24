@@ -397,4 +397,38 @@ export class UserFunctions {
       });
     }
   }
+  async adminlogin(req: Request, res: Response) {
+    try {
+      let post = req.body;
+
+      const update = await this.db
+        .collection(this.COLLECTION)
+        .findOne({
+          $and: [
+            { email: post.email },
+            { emailConfirmed: true },
+            { type: "admin" },
+          ],
+        });
+      let verifypassword = bcrypt.compareSync(post.password, update.password);
+
+      if (verifypassword === true) {
+        delete update["password"];
+        const token = jwt.sign(update, "my-secret");
+
+        res.send({
+          status: true,
+          message: "Successfully logged in",
+          token,
+          data: update,
+          errorCode: 0,
+        });
+      }
+    } catch (err) {
+      res.status(500).send({
+        status: false,
+        message: "Incorrect Credentials",
+      });
+    }
+  }
 }
