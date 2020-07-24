@@ -34,6 +34,9 @@ export class ProductFunctions {
       });
       let images_array: any = [];
       const images = req.body.images;
+      images.forEach((element: any) => {
+        if (element.startsWith("https://")) images_array.push(element);
+      });
       console.log("no of images is ", images.length);
 
       if (!fs.existsSync("data")) {
@@ -41,6 +44,7 @@ export class ProductFunctions {
       }
       images.forEach((element: any) => {
         if (element.startsWith("https://") === false) {
+          console.log("");
           let temp: string = "jpeg";
           if (element.charAt(0) == "/") {
             temp = "jpg";
@@ -82,7 +86,7 @@ export class ProductFunctions {
 
         const result = await this.uploads3(params);
 
-        fs.unlinkSync(`data/${element}`);
+        //    fs.unlinkSync(`data/${element}`);
       });
       if (post.images[0].startsWith("https://") === false) {
         await sharp(`data/${thumb_element}`)
@@ -102,11 +106,12 @@ export class ProductFunctions {
 
         thumb = result;
         post.thumb = thumb;
-        post.images = images_array;
       }
+      post.images = images_array;
       let product: any;
 
       if (post._id) {
+        console.log("post.images ", post.images);
         const id = post._id;
         delete post._id;
         product = await this.db
