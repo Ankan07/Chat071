@@ -28,6 +28,16 @@ export class ProductRoutes {
       .get("/search/:text", (req, res) => {
         this.functions.searchproduct(req, res);
       })
+      .post("/addcarousel", auth, (req, res) => {
+        this.functions.addcarousel(req, res);
+      })
+      .get("/getcarousel", auth, (req, res) => {
+        this.functions.getcarousel(req, res);
+      })
+      .post("/deletecarousel/:id", auth, (req, res) => {
+        this.functions.deletecarousel(req, res);
+      })
+
       .get("/homepage", auth, (req, res) => {
         this.functions.homepage(req, res);
       })

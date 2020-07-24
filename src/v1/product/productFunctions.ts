@@ -135,7 +135,95 @@ export class ProductFunctions {
       res.status(500).send({ message: "failure", error: err });
     }
   }
+  async addcarousel(req: Request, res: Response) {
+    try {
+      const s3 = new aws.S3({});
+      let image = req.body.image;
+      let images: string = "";
+      let post = req.body;
+      aws.config.update({
+        accessKeyId: "AKIAJRJB4MOKHBI6L4QQ",
+        secretAccessKey: "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",
+      });
+      if (!fs.existsSync("data")) {
+        fs.mkdirSync("data");
+      }
+      let temp: string = "jpeg";
+      if (image.charAt(0) == "/") {
+        temp = "jpg";
+      } else if (image.charAt(0) == "i") {
+        temp = "png";
+      }
+      fs.writeFileSync(
+        `data/image-${new Date().getTime()}-${Math.floor(
+          100000 + Math.random() * 900000
+        )}.${temp}`,
+        image,
+        {
+          encoding: "base64",
+        }
+      );
+      const files = fs.readdirSync("data");
+      console.log("files is ", files);
 
+      files.forEach((element: any) => {
+        console.log("dhdh", element);
+        const signedUrl = `https://crystoapp.s3.amazonaws.com/${element}`;
+        images = signedUrl;
+      });
+      files.forEach(async (element: any, i: any) => {
+        const params = {
+          ACL: "public-read",
+          Bucket: "crystoapp",
+          Body: fs.createReadStream(`data/${element}`),
+          Key: `${element}`,
+        };
+
+        const result = await this.uploads3(params);
+
+        fs.unlinkSync(`data/${element}`);
+      });
+      post.image = images;
+      const product = await this.db.collection("carousel").insertOne(post);
+
+      res.send({ message: "success", data: product.ops });
+    } catch (err) {
+      console.log(err);
+
+      res.status(500).send({ message: "failure", error: err });
+    }
+  }
+  async getcarousel(req: Request, res: Response) {
+    try {
+      const result = await this.db.collection("carousel").find({}).toArray();
+
+      res.send({
+        message: "success",
+        data: result,
+      });
+    } catch (err) {
+      res.status(500).send({
+        message: "failure",
+        error: err,
+      });
+    }
+  }
+  async deletecarousel(req: Request, res: Response) {
+    try {
+      const result = await this.db
+        .collection("carousel")
+        .deleteOne({ _id: new ObjectId(req.params.id) });
+
+      res.send({
+        message: "success",
+      });
+    } catch (err) {
+      res.status(500).send({
+        message: "failure",
+        error: err,
+      });
+    }
+  }
   async listproduct(req: Request, res: Response) {
     try {
       const query = { type: req.params.type };
