@@ -115,6 +115,12 @@ export class ProductFunctions {
         console.log("post.images ", post.images);
         const id = post._id;
         delete post._id;
+
+        // updating fuzzy array
+        await this.db
+          .collection("keywords")
+          .updateOne({ type: "fuzzy" }, { $push: { keywords: searchKey } });
+
         product = await this.db
           .collection(this.COLLECTION)
           .updateOne({ _id: new ObjectId(id) }, { $set: post });
@@ -179,14 +185,18 @@ export class ProductFunctions {
   async searchproduct(req: Request, res: Response) {
     try {
       console.log("in here ");
-      let array = await update_fuzzy([]);
+      let search: string = req.params.text;
+      if (req.params.text.length >= 3) {
+        let array = await update_fuzzy([]);
 
-      console.log("are bhai", array);
-      let fuzzy_set = FuzzySet(array);
-      let firstresult = fuzzy_set.get(req.params.text);
-      let search: string;
-      search = firstresult[0][0].toString();
-      console.log("search is ", search);
+        console.log("are bhai", array);
+
+        let fuzzy_set = FuzzySet(array, true);
+        let firstresult = fuzzy_set.get(req.params.text);
+        if (firstresult !== null) search = firstresult[0][1].toString();
+        console.log("search is ", search);
+      }
+
       const post = req.body;
       let query: { searchKey?: any; type?: string } = {};
       query =
