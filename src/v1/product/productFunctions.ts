@@ -86,7 +86,7 @@ export class ProductFunctions {
 
         const result = await this.uploads3(params);
 
-        //    fs.unlinkSync(`data/${element}`);
+        fs.unlinkSync(`data/${element}`);
       });
       if (post.images[0].startsWith("https://") === false) {
         await sharp(`data/${thumb_element}`)
