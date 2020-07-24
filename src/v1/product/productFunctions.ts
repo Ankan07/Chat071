@@ -44,7 +44,7 @@ export class ProductFunctions {
           let temp: string = "jpeg";
           if (element.charAt(0) == "/") {
             temp = "jpg";
-          } else if (element.charAt(0) == "/") {
+          } else if (element.charAt(0) == "i") {
             temp = "png";
           }
           fs.writeFileSync(
@@ -61,6 +61,7 @@ export class ProductFunctions {
       console.log("ba ba ");
       const files = fs.readdirSync("data");
       console.log("files is ", files);
+
       files.forEach((element: any) => {
         console.log("dhdh", element);
         const signedUrl = `https://crystoapp.s3.amazonaws.com/${element}`;
@@ -83,35 +84,42 @@ export class ProductFunctions {
 
         fs.unlinkSync(`data/${element}`);
       });
-      await sharp(`data/${thumb_element}`)
-        .resize(200, 200)
-        .toFile(`${thumb_element}`);
+      if (post.images[0].startsWith("https://") === false) {
+        await sharp(`data/${thumb_element}`)
+          .resize(200, 200)
+          .toFile(`${thumb_element}`);
 
-      let params_thumb = {
-        ACL: "public-read",
-        Bucket: "crystoapp",
-        Body: fs.createReadStream(`${thumb_element}`),
-        Key: `thumb-${thumb_element}`,
-      };
-      let result: any;
-      result = await this.uploads3(params_thumb);
+        let params_thumb = {
+          ACL: "public-read",
+          Bucket: "crystoapp",
+          Body: fs.createReadStream(`${thumb_element}`),
+          Key: `thumb-${thumb_element}`,
+        };
+        let result: any;
+        result = await this.uploads3(params_thumb);
 
-      fs.unlinkSync(`${thumb_element}`);
+        fs.unlinkSync(`${thumb_element}`);
 
-      thumb = result;
-      post.thumb = thumb;
-      post.images = images_array;
+        thumb = result;
+        post.thumb = thumb;
+        post.images = images_array;
+      }
       let product: any;
+
       if (post._id) {
+        const id = post._id;
+        delete post._id;
         product = await this.db
           .collection(this.COLLECTION)
-          .updateOne({ _id: new ObjectId(post._id) }, { $set: post });
+          .updateOne({ _id: new ObjectId(id) }, { $set: post });
       } else {
         product = await this.db.collection(this.COLLECTION).insertOne(post);
       }
 
       res.send({ message: "success", data: product.ops });
     } catch (err) {
+      console.log(err);
+
       res.status(500).send({ message: "failure", error: err });
     }
   }
