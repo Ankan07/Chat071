@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/axios": "^0.14.0",
+    "@types/fuzzyset": "^1.0.2",
     "aws-sdk": "^2.713.0",
     "axios": "^0.19.2",
     "bcrypt": "^4.0.1",
@@ -19,6 +20,7 @@
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "express": "^4.17.1",
+    "fuzzyset": "^1.0.5",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.7",
     "nodemailer": "^6.4.6",

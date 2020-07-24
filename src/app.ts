@@ -1,6 +1,7 @@
 import express from "express";
 import { BaseRoutes } from "./v1/routes";
 import cors from "cors";
+import FuzzySet from "fuzzyset";
 
 const app = express();
 
@@ -18,4 +19,7 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, () => {
   console.log("running on port 4000");
+  const set = FuzzySet();
+  set.add('product name');
+  set.get('prdt nm');
 });
