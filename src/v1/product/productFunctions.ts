@@ -1,6 +1,7 @@
 import { Db, ObjectId } from "mongodb";
 import { Request, Response } from "express";
-
+import { update_fuzzy, fuzzy_array } from "../../Utils/fuzzyset";
+import FuzzySet from "fuzzyset";
 import fs from "fs";
 import aws from "aws-sdk";
 import { resolve } from "path";
@@ -177,6 +178,15 @@ export class ProductFunctions {
 
   async searchproduct(req: Request, res: Response) {
     try {
+      console.log("in here ");
+      let array = await update_fuzzy([]);
+
+      console.log("are bhai", array);
+      let fuzzy_set = FuzzySet(array);
+      let firstresult = fuzzy_set.get(req.params.text);
+      let search: string;
+      search = firstresult[0][0].toString();
+      console.log("search is ", search);
       const post = req.body;
       let query: { searchKey?: any; type?: string } = {};
       query =
@@ -184,7 +194,7 @@ export class ProductFunctions {
           ? {}
           : {
               searchKey: {
-                $regex: ` ${req.params.text}|^${req.params.text}`,
+                $regex: ` ${search}|^${search}`,
                 $options: "$i",
               },
             };

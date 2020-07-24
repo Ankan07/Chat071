@@ -25,7 +25,7 @@ export class ProductRoutes {
       .post("/delete/:id", auth, (req, res) => {
         this.functions.deleteproduct(req, res);
       })
-      .get("/search/:text", auth, (req, res) => {
+      .get("/search/:text", (req, res) => {
         this.functions.searchproduct(req, res);
       })
       .get("/homepage", auth, (req, res) => {

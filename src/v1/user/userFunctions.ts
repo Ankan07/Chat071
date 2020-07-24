@@ -401,15 +401,13 @@ export class UserFunctions {
     try {
       let post = req.body;
 
-      const update = await this.db
-        .collection(this.COLLECTION)
-        .findOne({
-          $and: [
-            { email: post.email },
-            { emailConfirmed: true },
-            { type: "admin" },
-          ],
-        });
+      const update = await this.db.collection(this.COLLECTION).findOne({
+        $and: [
+          { email: post.email },
+          { emailConfirmed: true },
+          { type: "admin" },
+        ],
+      });
       let verifypassword = bcrypt.compareSync(post.password, update.password);
 
       if (verifypassword === true) {
@@ -423,11 +421,16 @@ export class UserFunctions {
           data: update,
           errorCode: 0,
         });
+      } else {
+        res.send({
+          status: false,
+          message: "Incorrect Credentials",
+        });
       }
     } catch (err) {
       res.status(500).send({
         status: false,
-        message: "Incorrect Credentials",
+        message: err,
       });
     }
   }
