@@ -116,15 +116,14 @@ export class ProductFunctions {
         const id = post._id;
         delete post._id;
 
-        // updating fuzzy array
-        await this.db
-          .collection("keywords")
-          .updateOne({ type: "fuzzy" }, { $push: { keywords: searchKey } });
-
         product = await this.db
           .collection(this.COLLECTION)
           .updateOne({ _id: new ObjectId(id) }, { $set: post });
       } else {
+        // updating fuzzy array
+        await this.db
+          .collection("keywords")
+          .updateOne({ type: "fuzzy" }, { $push: { keywords: post.name } });
         product = await this.db.collection(this.COLLECTION).insertOne(post);
       }
 
