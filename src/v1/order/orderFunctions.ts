@@ -69,7 +69,15 @@ export class OrderFunctions {
           sum +=
             Number(element.quantity) * Number(element.variant.discountedPrice);
         });
+
+        const deliverycharge = await this.db
+          .collection("deliverycharge")
+          .find({})
+          .toArray();
+        const deliverychargevalue = deliverycharge[0].deliverycharge;
+        sum += Number(deliverychargevalue);
         post.totalPrice = sum;
+        post.uniqueId = Math.floor(Math.random() * 10000) + 10000;
 
         const result = await this.db
           .collection(this.COLLECTION)
@@ -213,6 +221,54 @@ export class OrderFunctions {
       res.send({ message: "deleted" });
     } catch (err) {
       res.status(500).send({ message: "error", error: err });
+    }
+  }
+  async setdeliverycharge(req: Request, res: Response) {
+    try {
+      const count = await this.db
+        .collection("deliverycharge")
+        .find({})
+        .toArray();
+
+      if (count.length == 0) {
+        await this.db
+          .collection("deliverycharge")
+          .insertOne({ deliverycharge: Number(req.params.id) });
+      } else {
+        const id = count[0]._id;
+        await this.db
+          .collection("deliverycharge")
+          .updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { deliverycharge: Number(req.params.id) } }
+          );
+      }
+
+      res.send({
+        message: "updated",
+      });
+    } catch (err) {
+      res.status(500).send({
+        message: "failure",
+        error: err,
+      });
+    }
+  }
+  async getdeliverycharge(req: Request, res: Response) {
+    try {
+      const count = await this.db
+        .collection("deliverycharge")
+        .find({})
+        .toArray();
+
+      res.send({
+        deliverycharge: count[0].deliverycharge,
+      });
+    } catch (err) {
+      res.status(500).send({
+        message: "failure",
+        error: err,
+      });
     }
   }
 }

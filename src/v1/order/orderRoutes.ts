@@ -48,6 +48,12 @@ export class OrderRoutes {
       .post("/delete/:id", (req, res) => {
         this.functions.deleteorderbyid(req, res);
       })
+      .post("/setdeliverycharge/:id", auth, (req, res) => {
+        this.functions.setdeliverycharge(req, res);
+      })
+      .get("/getdeliverycharge", auth, (req, res) => {
+        this.functions.getdeliverycharge(req, res);
+      })
       .get("", auth, (req, res) => {
         this.functions.getOrderByCriteria(req, res);
       })

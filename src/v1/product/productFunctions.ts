@@ -40,21 +40,23 @@ export class ProductFunctions {
         fs.mkdirSync("data");
       }
       images.forEach((element: any) => {
-        let temp: string = "jpeg";
-        if (element.charAt(0) == "/") {
-          temp = "jpg";
-        } else if (element.charAt(0) == "/") {
-          temp = "png";
-        }
-        fs.writeFileSync(
-          `data/image-${new Date().getTime()}-${Math.floor(
-            100000 + Math.random() * 900000
-          )}.${temp}`,
-          element,
-          {
-            encoding: "base64",
+        if (element.startsWith("https://") === false) {
+          let temp: string = "jpeg";
+          if (element.charAt(0) == "/") {
+            temp = "jpg";
+          } else if (element.charAt(0) == "/") {
+            temp = "png";
           }
-        );
+          fs.writeFileSync(
+            `data/image-${new Date().getTime()}-${Math.floor(
+              100000 + Math.random() * 900000
+            )}.${temp}`,
+            element,
+            {
+              encoding: "base64",
+            }
+          );
+        }
       });
       console.log("ba ba ");
       const files = fs.readdirSync("data");
@@ -99,8 +101,14 @@ export class ProductFunctions {
       thumb = result;
       post.thumb = thumb;
       post.images = images_array;
-
-      const product = await this.db.collection(this.COLLECTION).insertOne(post);
+      let product: any;
+      if (post._id) {
+        product = await this.db
+          .collection(this.COLLECTION)
+          .updateOne({ _id: new ObjectId(post._id) }, { $set: post });
+      } else {
+        product = await this.db.collection(this.COLLECTION).insertOne(post);
+      }
 
       res.send({ message: "success", data: product.ops });
     } catch (err) {
@@ -143,6 +151,9 @@ export class ProductFunctions {
     try {
       const result = await this.db
         .collection(this.COLLECTION)
+        .deleteOne({ _id: new ObjectId(req.params.id) });
+      const deletefromfeatured = await this.db
+        .collection("featured")
         .deleteOne({ _id: new ObjectId(req.params.id) });
 
       res.send({ message: "success" });
