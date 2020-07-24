@@ -34,14 +34,27 @@ export class ProductFunctions {
       });
       let images_array: any = [];
       const images = req.body.images;
+      console.log("no of images is ", images.length);
 
-      if (!fs.existsSync('data')){
-        fs.mkdirSync('data');
+      if (!fs.existsSync("data")) {
+        fs.mkdirSync("data");
       }
       images.forEach((element: any) => {
-        fs.writeFileSync(`data/image-${new Date().getTime()}.png`, element, {
-          encoding: "base64",
-        });
+        let temp: string = "jpeg";
+        if (element.charAt(0) == "/") {
+          temp = "jpg";
+        } else if (element.charAt(0) == "/") {
+          temp = "png";
+        }
+        fs.writeFileSync(
+          `data/image-${new Date().getTime()}-${Math.floor(
+            100000 + Math.random() * 900000
+          )}.${temp}`,
+          element,
+          {
+            encoding: "base64",
+          }
+        );
       });
       console.log("ba ba ");
       const files = fs.readdirSync("data");
