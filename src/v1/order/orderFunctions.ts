@@ -28,7 +28,11 @@ export class OrderFunctions {
             $lte: req.query.end,
           };
         }
-        data = await this.db.collection(this.COLLECTION).find(query).toArray();
+        data = await this.db
+          .collection(this.COLLECTION)
+          .find(query)
+          .sort({ orderDate: -1 })
+          .toArray();
 
         res.send({ message: "success", data });
       } else {
@@ -78,7 +82,14 @@ export class OrderFunctions {
         sum += Number(deliverychargevalue);
         post.totalPrice = sum;
         post.uniqueId = Math.floor(Math.random() * 10000) + 10000;
-
+        const invoice = await this.db
+          .collection("meta")
+          .findOne({ type: "invoice" });
+        let invoice_number = invoice["count"] + 1;
+        await this.db
+          .collection("meta")
+          .updateOne({ type: "invoice" }, { $set: { count: invoice_number } });
+        post.invoice_number = invoice_number;
         const result = await this.db
           .collection(this.COLLECTION)
           .insertOne(post);
