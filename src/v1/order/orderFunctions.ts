@@ -54,7 +54,7 @@ export class OrderFunctions {
           res.status(400).send({ message: "Invalid ObjectId provided" });
           return;
         }
-
+        delete post._id;
         const result = await this.db
           .collection(this.COLLECTION)
           .updateOne({ _id: oid }, { $set: post });
