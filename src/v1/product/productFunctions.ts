@@ -273,6 +273,11 @@ export class ProductFunctions {
     try {
       console.log("in here ");
       let search: string = req.params.text;
+
+      let user = res.locals.user;
+      await this.db
+        .collection("searchlogs")
+        .insertOne({ text: req.params.text, user });
       if (req.params.text.length >= 3) {
         let array = await update_fuzzy([]);
 
