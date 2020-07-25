@@ -334,7 +334,7 @@ export class ProductFunctions {
         .toArray();
       console.log("result vat", resultcategory);
       if (resultcategory.length !== 0) {
-        res.send({ message: "category already exixst" });
+        res.send({ message: "category already exist" });
       } else {
         const result = await this.db
           .collection("categories")
@@ -390,7 +390,11 @@ export class ProductFunctions {
       const updatecategory = await this.db.collection("categories").updateOne(
         { _id: new ObjectId(req.params.id) },
         {
-          $set: { name: req.body.newname, description: req.body.description },
+          $set: {
+            name: req.body.newname,
+            description: req.body.description,
+            deliveryMessage: req.body.deliveryMessage
+          },
         }
       );
       const updatecategoryforallfeatureditems = await this.db
