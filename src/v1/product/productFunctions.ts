@@ -6,6 +6,7 @@ import fs from "fs";
 import aws from "aws-sdk";
 import { resolve } from "path";
 import sharp from "sharp";
+import { type } from "os";
 export class ProductFunctions {
   COLLECTION = "product";
   constructor(private db: Db) {}
@@ -223,6 +224,52 @@ export class ProductFunctions {
       });
     }
   }
+  async addslots(req: Request, res: Response) {
+    try {
+      const post = req.body;
+      post.type = "slots";
+      const product = await this.db.collection("slots").insertOne(post);
+
+      res.send({ message: "success", data: product.ops });
+    } catch (err) {
+      console.log(err);
+
+      res.status(500).send({ message: "failure", error: err });
+    }
+  }
+  async getslots(req: Request, res: Response) {
+    try {
+      const result = await this.db
+        .collection("carousel")
+        .findOne({ type: "slots" });
+
+      res.send({
+        message: "success",
+        data: result,
+      });
+    } catch (err) {
+      res.status(500).send({
+        message: "failure",
+        error: err,
+      });
+    }
+  }
+  async deleteslots(req: Request, res: Response) {
+    try {
+      const result = await this.db
+        .collection("slots")
+        .deleteOne({ _id: new ObjectId(req.params.id) });
+
+      res.send({
+        message: "success",
+      });
+    } catch (err) {
+      res.status(500).send({
+        message: "failure",
+        error: err,
+      });
+    }
+  }
   async listproduct(req: Request, res: Response) {
     try {
       const query = { type: req.params.type };
@@ -242,6 +289,7 @@ export class ProductFunctions {
 
   async editproduct(req: Request, res: Response) {
     try {
+      req.body.name = req.body.name.toUpperCase();
       const post = req.body;
 
       const result = await this.db
@@ -432,6 +480,11 @@ export class ProductFunctions {
       const delete_items = await this.db
         .collection("featured")
         .deleteMany({ type: req.params.type });
+
+      req.body.items.forEach((element: any) => {
+        element._id = { $oid: element._id };
+      });
+
       const result = await this.db
         .collection("featured")
         .insertMany(req.body.items);

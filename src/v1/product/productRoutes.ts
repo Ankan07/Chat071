@@ -37,6 +37,15 @@ export class ProductRoutes {
       .post("/deletecarousel/:id", auth, (req, res) => {
         this.functions.deletecarousel(req, res);
       })
+      .post("/addslots", auth, (req, res) => {
+        this.functions.addcarousel(req, res);
+      })
+      .get("/getslots", auth, (req, res) => {
+        this.functions.getslots(req, res);
+      })
+      .post("/deleteslots/:id", auth, (req, res) => {
+        this.functions.deleteslots(req, res);
+      })
 
       .get("/homepage", auth, (req, res) => {
         this.functions.homepage(req, res);
