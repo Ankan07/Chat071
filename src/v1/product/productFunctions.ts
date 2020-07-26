@@ -503,7 +503,7 @@ export class ProductFunctions {
         .deleteMany({ type: req.params.type });
 
       req.body.items.forEach((element: any) => {
-        element._id = { _id: new ObjectId(element._id) };
+        element._id = new ObjectId(element._id);
       });
 
       const result = await this.db
