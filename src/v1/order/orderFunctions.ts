@@ -13,9 +13,12 @@ export class OrderFunctions {
       let data = [];
       if (req.query.where && req.query.is) {
         const where: string = req.query.where as string;
-        let is: string | ObjectId = req.query.is as string;
+        let is: string | ObjectId | Number = req.query.is as string;
         if (where === "_id") {
           is = new ObjectId(is);
+        }
+        if (where === "invoice_number" || where === "uniqueId") {
+          is = Number(is);
         }
 
         query = {
