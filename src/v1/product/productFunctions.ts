@@ -227,9 +227,7 @@ export class ProductFunctions {
   async addslots(req: Request, res: Response) {
     try {
       const post = req.body;
-      post.type = "slots";
       const product = await this.db.collection("slots").insertOne(post);
-
       res.send({ message: "success", data: product.ops });
     } catch (err) {
       console.log(err);
@@ -240,9 +238,8 @@ export class ProductFunctions {
   async getslots(req: Request, res: Response) {
     try {
       const result = await this.db
-        .collection("carousel")
-        .findOne({ type: "slots" });
-
+        .collection("slots")
+        .find({}).toArray();
       res.send({
         message: "success",
         data: result,
@@ -252,6 +249,33 @@ export class ProductFunctions {
         message: "failure",
         error: err,
       });
+    }
+  }
+
+  async editSlots(req: Request, res: Response) {
+    let id;
+    try {
+      try {
+        id = new ObjectId(req.params.id);
+      } catch (err) {
+        res.status(400).send({message: 'Bad object id provided', error: err});
+      }
+
+      const body = req.body;
+      delete body._id;
+      const result = await this.db
+        .collection('slots')
+        .updateOne({_id: id}, { $set: body});
+
+      if (result.matchedCount) {
+        res.send({status: true});
+      } else {
+        res.send({status: false, message: 'unknown id provided'});
+      }
+
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({message: 'failure', error: err});
     }
   }
   async deleteslots(req: Request, res: Response) {

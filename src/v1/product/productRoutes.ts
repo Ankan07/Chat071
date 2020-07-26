@@ -38,13 +38,16 @@ export class ProductRoutes {
         this.functions.deletecarousel(req, res);
       })
       .post("/addslots", auth, (req, res) => {
-        this.functions.addcarousel(req, res);
+        this.functions.addslots(req, res);
       })
       .get("/getslots", auth, (req, res) => {
         this.functions.getslots(req, res);
       })
       .post("/deleteslots/:id", auth, (req, res) => {
         this.functions.deleteslots(req, res);
+      })
+      .post('/editslots/:id', auth, (req, res) => {
+        this.functions.editSlots(req, res);
       })
 
       .get("/homepage", auth, (req, res) => {
