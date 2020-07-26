@@ -237,9 +237,7 @@ export class ProductFunctions {
   }
   async getslots(req: Request, res: Response) {
     try {
-      const result = await this.db
-        .collection("slots")
-        .find({}).toArray();
+      const result = await this.db.collection("slots").find({}).toArray();
       res.send({
         message: "success",
         data: result,
@@ -258,24 +256,23 @@ export class ProductFunctions {
       try {
         id = new ObjectId(req.params.id);
       } catch (err) {
-        res.status(400).send({message: 'Bad object id provided', error: err});
+        res.status(400).send({ message: "Bad object id provided", error: err });
       }
 
       const body = req.body;
       delete body._id;
       const result = await this.db
-        .collection('slots')
-        .updateOne({_id: id}, { $set: body});
+        .collection("slots")
+        .updateOne({ _id: id }, { $set: body });
 
       if (result.matchedCount) {
-        res.send({status: true});
+        res.send({ status: true });
       } else {
-        res.send({status: false, message: 'unknown id provided'});
+        res.send({ status: false, message: "unknown id provided" });
       }
-
     } catch (err) {
       console.log(err);
-      res.status(500).send({message: 'failure', error: err});
+      res.status(500).send({ message: "failure", error: err });
     }
   }
   async deleteslots(req: Request, res: Response) {
@@ -465,7 +462,7 @@ export class ProductFunctions {
           $set: {
             name: req.body.newname,
             description: req.body.description,
-            deliveryMessage: req.body.deliveryMessage
+            deliveryMessage: req.body.deliveryMessage,
           },
         }
       );
@@ -506,7 +503,7 @@ export class ProductFunctions {
         .deleteMany({ type: req.params.type });
 
       req.body.items.forEach((element: any) => {
-        element._id = { $oid: element._id };
+        element._id = { _id: new ObjectId(element._id) };
       });
 
       const result = await this.db
