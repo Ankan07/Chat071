@@ -344,7 +344,7 @@ export class ProductFunctions {
       let search: string = req.params.text;
 
       let user = res.locals.user;
-      console.log("user is ", JSON.stringify(res.locals));
+      console.log("user ", JSON.stringify(res.locals));
       await this.db
         .collection("searchlogs")
         .insertOne({ text: req.params.text, user: user });
