@@ -27,8 +27,8 @@ export class OrderFunctions {
 
         if (req.query.start && req.query.end) {
           query.orderDate = {
-            $gte: req.query.start,
-            $lte: req.query.end,
+            $gte: parseInt(req.query.start.toString(), 10),
+            $lte: parseInt(req.query.end.toString(), 10),
           };
         }
         data = await this.db
