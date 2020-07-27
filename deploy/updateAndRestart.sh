@@ -33,4 +33,4 @@ npm install
 npm run build
 
 #Start the pm2 server
-pm2 start dist/app.js --node-args="--max_old_space_size=4096"  
+pm2 start dist/app.js 
