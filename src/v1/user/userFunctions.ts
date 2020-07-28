@@ -445,7 +445,7 @@ export class UserFunctions {
 
   async saveToken(req: Request, res: Response) {
     const body: {_id: string, token: string} = req.body;
-    if (body._id && body.token) {
+    if (!body._id || !body.token) {
       res.status(400).send({message: '_id and token expected', status: false});
       return;
     }
