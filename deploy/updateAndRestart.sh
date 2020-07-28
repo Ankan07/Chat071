@@ -4,7 +4,7 @@ echo "are bhai bhai bhai"
 set -e
 
 # Delete the old repo
-rm -rf /home/ubuntu/backend
+sudo rm -rf /home/ubuntu/backend
 echo "removed old directory"
 # clone the repo again 
 git clone -b ankan --single-branch https://pjN3nsNarcQgEWsHJceU:pjN3nsNarcQgEWsHJceU@gitlab.com/essentials1/backend.git
