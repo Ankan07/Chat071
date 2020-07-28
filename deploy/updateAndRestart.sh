@@ -28,7 +28,7 @@ cd /home/ubuntu/backend
 #install npm packages
 echo "Running npm install"
 npm install
-
+echo "before build"
 #Build the node server
 npm run build
 
