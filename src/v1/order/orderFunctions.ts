@@ -197,7 +197,7 @@ export class OrderFunctions {
           currency: "INR",
         }
       );
-      console.log("result is ", capture_payment.data);
+      console.log("result", capture_payment.data);
       const insert_into_payments = await this.db
         .collection("payments")
         .insertOne(capture_payment.data);
