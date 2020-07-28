@@ -59,6 +59,12 @@ export class UserRoutes {
         .post("/forgotpassword", (req, res) => {
           this.functions.forgotpassword(req, res);
         })
+        .post('/notification', (req, res) => {
+          this.functions.sendMessage(req, res);
+        })
+        .post('/token', (req, res) => {
+          this.functions.saveToken(req, res);
+        })
     );
   }
 }

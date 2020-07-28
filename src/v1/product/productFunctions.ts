@@ -34,7 +34,7 @@ export class ProductFunctions {
         accessKeyId: "AKIAJRJB4MOKHBI6L4QQ",
         secretAccessKey: "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",
       });
-      let images_array: any = [];
+      const images_array: any = [];
       const images = req.body.images;
       images.forEach((element: any) => {
         if (element.startsWith("https://")) images_array.push(element);
@@ -48,9 +48,9 @@ export class ProductFunctions {
         if (element.startsWith("https://") === false) {
           console.log("");
           let temp: string = "jpeg";
-          if (element.charAt(0) == "/") {
+          if (element.charAt(0) === "/") {
             temp = "jpg";
-          } else if (element.charAt(0) == "i") {
+          } else if (element.charAt(0) === "i") {
             temp = "png";
           }
           fs.writeFileSync(
@@ -95,7 +95,7 @@ export class ProductFunctions {
           .resize(200, 200)
           .toFile(`${thumb_element}`);
 
-        let params_thumb = {
+        const params_thumb = {
           ACL: "public-read",
           Bucket: "crystoapp",
           Body: fs.createReadStream(`${thumb_element}`),
@@ -138,9 +138,9 @@ export class ProductFunctions {
   async addcarousel(req: Request, res: Response) {
     try {
       const s3 = new aws.S3({});
-      let image = req.body.image;
+      const image = req.body.image;
       let images: string = "";
-      let post = req.body;
+      const post = req.body;
       aws.config.update({
         accessKeyId: "AKIAJRJB4MOKHBI6L4QQ",
         secretAccessKey: "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",
@@ -149,9 +149,9 @@ export class ProductFunctions {
         fs.mkdirSync("data");
       }
       let temp: string = "jpeg";
-      if (image.charAt(0) == "/") {
+      if (image.charAt(0) === "/") {
         temp = "jpg";
-      } else if (image.charAt(0) == "i") {
+      } else if (image.charAt(0) === "i") {
         temp = "png";
       }
       fs.writeFileSync(
@@ -343,18 +343,18 @@ export class ProductFunctions {
       console.log("in here ");
       let search: string = req.params.text;
 
-      let user = res.locals.user;
+      const user = res.locals.user;
       console.log("user ", JSON.stringify(res.locals));
       await this.db
         .collection("searchlogs")
-        .insertOne({ text: req.params.text, user: user });
+        .insertOne({ text: req.params.text, user });
       if (req.params.text.length >= 3) {
-        let array = await update_fuzzy([]);
+        const array = await update_fuzzy([]);
 
         console.log("are bhai", array);
 
-        let fuzzy_set = FuzzySet(array, true);
-        let firstresult = fuzzy_set.get(req.params.text);
+        const fuzzy_set = FuzzySet(array, true);
+        const firstresult = fuzzy_set.get(req.params.text);
         if (firstresult !== null) search = firstresult[0][1].toString();
         console.log("search is ", search);
       }

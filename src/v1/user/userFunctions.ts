@@ -8,11 +8,11 @@ export class UserFunctions {
   COLLECTION = "user";
   constructor(private db: Db) {}
 
-  //error codes:
-  //0: Successfully logged in
-  //1: Invalid Credentials
-  //2: Please verify your email
-  //3: User Not Found
+  // error codes:
+  // 0: Successfully logged in
+  // 1: Invalid Credentials
+  // 2: Please verify your email
+  // 3: User Not Found
   async getuser(req: Request, res: Response) {
     try {
       let queryBody = {};
@@ -40,7 +40,7 @@ export class UserFunctions {
     try {
       let decode = jwt.verify(req.params.id, "awesome-learning");
       decode = decode.toString().substring(1, decode.toString().length - 1);
-      if (req.query.type == "emailverification") {
+      if (req.query.type === "emailverification") {
         const update = await this.db
           .collection(this.COLLECTION)
           .updateOne(
@@ -54,12 +54,12 @@ export class UserFunctions {
             "email_verification_successful.html"
           )
         );
-      } else if (req.query.type == "forgotpassword") {
-        if (req.method == "GET") {
+      } else if (req.query.type === "forgotpassword") {
+        if (req.method === "GET") {
           res.sendFile(
             path.join(__dirname, "../../../public/html", "reset-password.html")
           );
-        } else if (req.method == "POST") {
+        } else if (req.method === "POST") {
           const update = await this.db
             .collection(this.COLLECTION)
             .updateOne(
@@ -93,16 +93,16 @@ export class UserFunctions {
       if (update) {
         // console.log("password is ", post.password);
         let verifypassword: boolean;
-        if (post.signInMethod == "email") {
+        if (post.signInMethod === "email") {
           verifypassword = bcrypt.compareSync(post.password, update.password);
-        } else if (post.signInMethod == "google") {
+        } else if (post.signInMethod === "google") {
           verifypassword = true;
         } else {
           verifypassword = false;
         }
 
         if (verifypassword === true) {
-          delete update["password"];
+          delete update.password;
           const token = jwt.sign(update, "my-secret");
 
           res.send({
@@ -113,7 +113,7 @@ export class UserFunctions {
             errorCode: 0,
           });
         } else {
-          if (update.signInMethod == "google") {
+          if (update.signInMethod === "google") {
             res.send({
               status: false,
               message: "You have already signed up using Google",
@@ -162,12 +162,12 @@ export class UserFunctions {
         .collection(this.COLLECTION)
         .findOne({ $and: [{ email: post.email }, { emailConfirmed: true }] });
       if (update) {
-        if (update.signInMethod == "google") {
+        if (update.signInMethod === "google") {
           res.send({
             status: true,
             message: "You have Google signed into this email!",
           });
-        } else if (update.signInMethod == "email") {
+        } else if (update.signInMethod === "email") {
           await mail(update.email, "forgot password", update._id);
           res.send({
             status: true,
@@ -222,7 +222,7 @@ export class UserFunctions {
     try {
       const post = req.body;
       // console.log("email is ", post.email);
-      //signInMethod --> in req.body email/google
+      // signInMethod --> in req.body email/google
 
       const finduser = await this.db
         .collection(this.COLLECTION)
@@ -233,12 +233,12 @@ export class UserFunctions {
         // user exist
         if (finduser.emailConfirmed === true) {
           // console.log("user already");
-          if (finduser.signInMethod == "google")
+          if (finduser.signInMethod === "google")
             res.send({
               status: false,
               message: "You have already signed up using Google",
             });
-          else if (finduser.signInMethod == "email")
+          else if (finduser.signInMethod === "email")
             res.send({
               status: false,
               message: "You have already signed up using this email",
@@ -251,35 +251,35 @@ export class UserFunctions {
         // user doesnot exist
 
         post.emailConfirmed = false;
-        if (req.body.signInMethod == "email") {
+        if (req.body.signInMethod === "email") {
           post.password = bcrypt.hashSync(post.password, 5);
         }
-        if (req.body.signInMethod == "google") {
+        if (req.body.signInMethod === "google") {
           post.emailConfirmed = true;
         }
         const result = await this.db
           .collection(this.COLLECTION)
           .insertOne(post);
-        if (req.body.signInMethod == "email") {
+        if (req.body.signInMethod === "email") {
           const mailstatus = await mail(
             post.email,
             "registration",
             result.ops[0]._id
           );
         }
-        let temp = result.ops[0];
-        delete temp["password"];
+        const temp = result.ops[0];
+        delete temp.password;
         let message;
-        if (req.body.signInMethod == "email")
+        if (req.body.signInMethod === "email")
           message = "An email has been sent!. Please Confirm to continue";
-        else if (req.body.signInMethod == "google") {
+        else if (req.body.signInMethod === "google") {
           message = "Created an User ";
           token = jwt.sign(result.ops[0], "my-secret");
         }
 
         res.send({
           status: true,
-          message: message,
+          message,
           token,
           data: temp,
         });
@@ -399,7 +399,7 @@ export class UserFunctions {
   }
   async adminlogin(req: Request, res: Response) {
     try {
-      let post = req.body;
+      const post = req.body;
 
       const update = await this.db.collection(this.COLLECTION).findOne({
         $and: [
@@ -408,10 +408,10 @@ export class UserFunctions {
           { type: "admin" },
         ],
       });
-      let verifypassword = bcrypt.compareSync(post.password, update.password);
+      const verifypassword = bcrypt.compareSync(post.password, update.password);
 
       if (verifypassword === true) {
-        delete update["password"];
+        delete update.password;
         const token = jwt.sign(update, "my-secret");
 
         res.send({
@@ -432,6 +432,51 @@ export class UserFunctions {
         status: false,
         message: err,
       });
+    }
+  }
+
+  async sendMessage(req: Request, res: Response) {
+    // TODO
+    res.send({
+      message: 'Message was successfully delivered!',
+      status: true
+    });
+  }
+
+  async saveToken(req: Request, res: Response) {
+    const body: {_id: string, token: string} = req.body;
+    if (body._id && body.token) {
+      res.status(400).send({message: '_id and token expected', status: false});
+      return;
+    }
+
+    let oid: ObjectId;
+    try {
+      oid = new ObjectId(body._id);
+    } catch(error) {
+      res.status(400).send({message: 'Invalid user id provided', error});
+      return;
+    }
+
+    try {
+      const resp = await this.db
+      .collection(this.COLLECTION)
+      .updateOne({
+        _id: oid
+      },
+      {
+        $set: {
+          pushToken: body.token
+        }
+      });
+
+      if (resp.modifiedCount) {
+        res.send({message: 'token saved', status: true});
+      } else {
+        res.send({message: 'user not found', status: false});
+      }
+    } catch (error) {
+      res.status(500).send({message: 'Mongodb error', status: false,  error});
     }
   }
 }
