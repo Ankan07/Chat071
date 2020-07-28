@@ -13,7 +13,7 @@ app.use(express.json());
 
 app.use("/v1", new BaseRoutes().getRouter());
 app.get("/", (req, res) => {
-  res.send("Ich Bin Du");
+  res.send("Ich Bin Du, but is this how the game is played?");
 });
 
 app.listen(PORT, () => {
