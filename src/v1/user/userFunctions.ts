@@ -398,6 +398,7 @@ export class UserFunctions {
     }
   }
   async adminlogin(req: Request, res: Response) {
+    console.log("new nigga");
     try {
       const post = req.body;
 
@@ -438,45 +439,47 @@ export class UserFunctions {
   async sendMessage(req: Request, res: Response) {
     // TODO
     res.send({
-      message: 'Message was successfully delivered!',
-      status: true
+      message: "Message was successfully delivered!",
+      status: true,
     });
   }
 
   async saveToken(req: Request, res: Response) {
-    const body: {_id: string, token: string} = req.body;
+    const body: { _id: string; token: string } = req.body;
     if (!body._id || !body.token) {
-      res.status(400).send({message: '_id and token expected', status: false});
+      res
+        .status(400)
+        .send({ message: "_id and token expected", status: false });
       return;
     }
 
     let oid: ObjectId;
     try {
       oid = new ObjectId(body._id);
-    } catch(error) {
-      res.status(400).send({message: 'Invalid user id provided', error});
+    } catch (error) {
+      res.status(400).send({ message: "Invalid user id provided", error });
       return;
     }
 
     try {
-      const resp = await this.db
-      .collection(this.COLLECTION)
-      .updateOne({
-        _id: oid
-      },
-      {
-        $set: {
-          pushToken: body.token
+      const resp = await this.db.collection(this.COLLECTION).updateOne(
+        {
+          _id: oid,
+        },
+        {
+          $set: {
+            pushToken: body.token,
+          },
         }
-      });
+      );
 
       if (resp.modifiedCount) {
-        res.send({message: 'token saved', status: true});
+        res.send({ message: "token saved", status: true });
       } else {
-        res.send({message: 'user not found', status: false});
+        res.send({ message: "user not found", status: false });
       }
     } catch (error) {
-      res.status(500).send({message: 'Mongodb error', status: false,  error});
+      res.status(500).send({ message: "Mongodb error", status: false, error });
     }
   }
 }
