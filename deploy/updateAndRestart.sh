@@ -30,6 +30,7 @@ echo "Running npm install"
 npm install
 echo "before build"
 export NODE_OPTIONS=--max-old-space-size=8192
+echo "this is for preveting heap out of memory"
 
 #Build the node server
 npm run build
