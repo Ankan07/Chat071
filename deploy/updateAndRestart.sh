@@ -29,6 +29,8 @@ cd /home/ubuntu/backend
 echo "Running npm install"
 npm install
 echo "before build"
+export NODE_OPTIONS=--max-old-space-size=8192
+
 #Build the node server
 npm run build
 
