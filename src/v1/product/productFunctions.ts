@@ -122,9 +122,14 @@ export class ProductFunctions {
           .updateOne({ _id: new ObjectId(id) }, { $set: post });
       } else {
         // updating fuzzy array
-        await this.db
-          .collection("keywords")
-          .updateOne({ type: "fuzzy" }, { $push: { keywords: post.name } });
+
+        let words = post.name.split(" ");
+        words.array.forEach(async (element: any) => {
+          await this.db
+            .collection("keywords")
+            .updateOne({ type: "fuzzy" }, { $push: { keywords: element } });
+        });
+
         product = await this.db.collection(this.COLLECTION).insertOne(post);
       }
 
@@ -345,6 +350,7 @@ export class ProductFunctions {
 
       const user = res.locals.user;
       console.log("user ", JSON.stringify(res.locals));
+
       await this.db
         .collection("searchlogs")
         .insertOne({ text: req.params.text, user });
