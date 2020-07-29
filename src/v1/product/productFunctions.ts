@@ -124,7 +124,8 @@ export class ProductFunctions {
         // updating fuzzy array
 
         let words = post.name.split(" ");
-        words.array.forEach(async (element: any) => {
+        console.log("name is ", post.name);
+        words.forEach(async (element: any) => {
           await this.db
             .collection("keywords")
             .updateOne({ type: "fuzzy" }, { $push: { keywords: element } });

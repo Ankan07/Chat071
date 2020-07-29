@@ -13,7 +13,7 @@ export class ProductRoutes {
     const auth = new Auth().verifyToken;
     return express
       .Router()
-      .post("", auth, (req, res) => {
+      .post("", (req, res) => {
         this.functions.addproduct(req, res);
       })
       .get("/list/:type", auth, (req, res) => {
@@ -46,7 +46,7 @@ export class ProductRoutes {
       .post("/deleteslots/:id", auth, (req, res) => {
         this.functions.deleteslots(req, res);
       })
-      .post('/editslots/:id', auth, (req, res) => {
+      .post("/editslots/:id", auth, (req, res) => {
         this.functions.editSlots(req, res);
       })
 
