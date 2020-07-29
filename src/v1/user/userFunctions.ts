@@ -445,10 +445,10 @@ export class UserFunctions {
           "key=AAAAyliwVeI:APA91bHsZ3M_WeH63ZSc9xuA7koujitekO9wQOYcgVsHh3st_k55hTB_S4Er04r41sQeP6BSQuHia4jlpw67ssDeQJvDlEx02uZ0JakA7kbH8obyBDfeNGFTZnLa_eZheFQWKqOamWCE",
       };
 
-      await Axios.post(
+      const result = await Axios.post(
         "https://fcm.googleapis.com/fcm/send",
         {
-          to: "/topic/customer",
+          to: "/topics/customer",
           notification: {
             body: req.body.message,
             title: "Crysto World",
@@ -458,6 +458,7 @@ export class UserFunctions {
           headers: headers,
         }
       );
+      console.log(result.data);
 
       res.send({
         message: "Message was successfully delivered!",
