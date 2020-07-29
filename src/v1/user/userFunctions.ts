@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { mail } from "../../Utils/mail";
 import bcrypt from "bcrypt";
 import path from "path";
+import Axios from "axios";
 export class UserFunctions {
   COLLECTION = "user";
   constructor(private db: Db) {}
@@ -437,11 +438,38 @@ export class UserFunctions {
   }
 
   async sendMessage(req: Request, res: Response) {
+    try {
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization:
+          "key=AAAAyliwVeI:APA91bHsZ3M_WeH63ZSc9xuA7koujitekO9wQOYcgVsHh3st_k55hTB_S4Er04r41sQeP6BSQuHia4jlpw67ssDeQJvDlEx02uZ0JakA7kbH8obyBDfeNGFTZnLa_eZheFQWKqOamWCE",
+      };
+
+      await Axios.post(
+        "https://fcm.googleapis.com/fcm/send",
+        {
+          to: "/topic/customer",
+          notification: {
+            body: req.body.message,
+            title: "Crysto World",
+          },
+        },
+        {
+          headers: headers,
+        }
+      );
+
+      res.send({
+        message: "Message was successfully delivered!",
+        status: true,
+      });
+    } catch (err) {
+      res.status(500).send({
+        message: "Message was not delivered!",
+        status: false,
+      });
+    }
     // TODO
-    res.send({
-      message: "Message was successfully delivered!",
-      status: true,
-    });
   }
 
   async saveToken(req: Request, res: Response) {
