@@ -35,7 +35,7 @@ export class UserRoutes {
         // .get("",auth,(req, res) => {
         //   this.functions.getuser(req, res);
         // })
-        .put("", (req, res) => {
+        .put("", auth, (req, res) => {
           this.functions.updateUser(req, res);
         })
         .get("/:id", auth, (req, res) => {
@@ -59,10 +59,10 @@ export class UserRoutes {
         .post("/forgotpassword", (req, res) => {
           this.functions.forgotpassword(req, res);
         })
-        .post('/notification', (req, res) => {
+        .post("/notification", (req, res) => {
           this.functions.sendMessage(req, res);
         })
-        .post('/token', (req, res) => {
+        .post("/token", (req, res) => {
           this.functions.saveToken(req, res);
         })
     );
