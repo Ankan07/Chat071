@@ -355,17 +355,17 @@ export class ProductFunctions {
       await this.db
         .collection("searchlogs")
         .insertOne({ text: req.params.text, user });
+      let array: any;
       if (req.params.text.length >= 3) {
-        const array = await update_fuzzy([]);
+        array = await update_fuzzy([]);
 
         console.log("are bhai", array);
 
         const fuzzy_set = FuzzySet(array, true);
         const firstresult = fuzzy_set.get(req.params.text);
         if (firstresult !== null) search = firstresult[0][1].toString();
-        console.log("search is ", search);
       }
-
+      console.log("search is ", search);
       const post = req.body;
       let query: { searchKey?: any; type?: string } = {};
       query =
@@ -386,7 +386,7 @@ export class ProductFunctions {
         .find(query)
         .toArray();
 
-      res.send({ message: "success", data: result });
+      res.send({ message: "success", data: result, array: array });
 
       // console.log();
     } catch (err) {
