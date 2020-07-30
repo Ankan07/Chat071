@@ -132,6 +132,13 @@ export class ProductFunctions {
         });
 
         product = await this.db.collection(this.COLLECTION).insertOne(post);
+
+        const fuzzyset = await this.db
+          .collection("keywords")
+          .find({})
+          .toArray();
+        const fuzzy_array = fuzzyset[0].keywords;
+        const updated_array = await update_fuzzy(fuzzy_array);
       }
 
       res.send({ message: "success", data: product.ops });
