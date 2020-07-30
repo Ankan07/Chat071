@@ -139,6 +139,8 @@ export class ProductFunctions {
           .toArray();
         const fuzzy_array = fuzzyset[0].keywords;
         const updated_array = await update_fuzzy(fuzzy_array);
+
+        console.log("product array is ", fuzzy_array);
       }
 
       res.send({ message: "success", data: product.ops });
