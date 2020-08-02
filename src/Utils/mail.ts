@@ -14,7 +14,7 @@ export const mail = async (email: any, type: any, id: any) => {
       },
     });
     //"13.126.82.139"
-    const ip = "13.126.82.139";
+    const ip = "15.207.42.59";
     const token = jwt.sign(JSON.stringify(id), "awesome-learning");
 
     console.log("token", token);
