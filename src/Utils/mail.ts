@@ -41,6 +41,7 @@ export const mail = async (email: any, type: any, id: any) => {
     };
 
     const message = await transport.sendMail(mailOptions);
+    console.log("mesage s ", message);
     return { message: "success" };
   } catch (error) {
     return { message: "failure", error: JSON.stringify(error) };
