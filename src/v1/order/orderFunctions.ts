@@ -5,7 +5,7 @@ import crypto from "crypto";
 import axios from "axios";
 export class OrderFunctions {
   COLLECTION = "order";
-  constructor(private db: Db) {}
+  constructor(private db: Db) { }
 
   async getOrderByCriteria(req: Request, res: Response) {
     try {
@@ -47,6 +47,37 @@ export class OrderFunctions {
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
     }
+  }
+
+
+  async sendMessage(message: string): Promise<boolean> {
+    try {
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization:
+          "key=AAAAyliwVeI:APA91bHsZ3M_WeH63ZSc9xuA7koujitekO9wQOYcgVsHh3st_k55hTB_S4Er04r41sQeP6BSQuHia4jlpw67ssDeQJvDlEx02uZ0JakA7kbH8obyBDfeNGFTZnLa_eZheFQWKqOamWCE",
+      };
+
+      const result = await axios.post(
+        "https://fcm.googleapis.com/fcm/send",
+        {
+          to: "dIKt97QooxA:APA91bHTlD51tFjL81fnUKvI-ue5RAoqRoAoPRbxl7w5QWKn0RebOu6FOeQZbkDi9q2A2D-SPAt-DmJAVeHW3ux7QNp8LK1vkYZZ2BkNUYIswqMOHPFoYNjt_8pdegVkDBUj0j2gqj9j",
+          notification: {
+            body: message,
+            title: "Order notification",
+          },
+        },
+        {
+          headers: headers,
+        }
+      );
+      console.log(result.data);
+
+      return true;
+    } catch (err) {
+      return false;
+    }
+    // TODO
   }
 
   async insertOrUpdateOrder(req: Request, res: Response) {
@@ -96,12 +127,14 @@ export class OrderFunctions {
         const result = await this.db
           .collection(this.COLLECTION)
           .insertOne(post);
-
+        const notification = await this.sendMessage(`Order from  ${post.customerDetails.name} with phone number ${post.customerDetails.phone} and amount of Rs ${post.totalPrice}`);
         res.send({
           message: "Successfully created an order",
           status: true,
           data: result["ops"][0],
         });
+
+
       }
     } catch (err) {
       res.status(500).send({ message: "failure", error: err });
