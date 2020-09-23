@@ -7,7 +7,7 @@ import path from "path";
 import Axios from "axios";
 export class UserFunctions {
   COLLECTION = "user";
-  constructor(private db: Db) {}
+  constructor(private db: Db) { }
 
   // error codes:
   // 0: Successfully logged in
