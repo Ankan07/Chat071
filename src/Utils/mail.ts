@@ -7,13 +7,13 @@ export const mail = async (email: any, type: any, id: any) => {
   try {
     const OAuth2 = google.auth.OAuth2;
     const oauth2Client = new OAuth2(
-      "869071345122-ob5h0uud9fpuaminog5tmlm681fgk8hm.apps.googleusercontent.com",
-      "rxTDC823n5SUEk9gAH-9_6_N", // Client Secret
+      "550151232396-4qvutl9q8mlfip23kq573m95qhlqmp1b.apps.googleusercontent.com",
+      "Gwg3J9IkYLU6K5J9s9viiU2-", // Client Secret
       "https://developers.google.com/oauthplayground" // Redirect URL
     );
     oauth2Client.setCredentials({
       refresh_token:
-        "1//04IojCHI7VhLZCgYIARAAGAQSNwF-L9IrUcfXP1yl0XvWK-Wb-C2tPnPbaDF9Ntm7KwJeiSBiVVQitr95HAor9jDmmuMAN4zyg2A",
+        "1//04Ay7BN4XEnQqCgYIARAAGAQSNwF-L9IrPWcbKZXRvemWSAoA2ts-yFBosNBcHtOMHGUMuFiqfV1ULEsA8nvaGSCxqK5JIYdj1vk",
     });
 
     const accessToken = await oauth2Client.getAccessToken();
@@ -22,18 +22,18 @@ export const mail = async (email: any, type: any, id: any) => {
       port: 2525,
       auth: {
         type: "OAuth2",
-        user: "Crystoworld@gmail.com",
+        user: "ankantech96@gmail.com",
         clientId:
-          "869071345122-ob5h0uud9fpuaminog5tmlm681fgk8hm.apps.googleusercontent.com",
-        clientSecret: "rxTDC823n5SUEk9gAH-9_6_N",
+          "550151232396-4qvutl9q8mlfip23kq573m95qhlqmp1b.apps.googleusercontent.com",
+        clientSecret: "Gwg3J9IkYLU6K5J9s9viiU2-",
         refreshToken:
-          "1//04IojCHI7VhLZCgYIARAAGAQSNwF-L9IrUcfXP1yl0XvWK-Wb-C2tPnPbaDF9Ntm7KwJeiSBiVVQitr95HAor9jDmmuMAN4zyg2A",
+          "1//04Ay7BN4XEnQqCgYIARAAGAQSNwF-L9IrPWcbKZXRvemWSAoA2ts-yFBosNBcHtOMHGUMuFiqfV1ULEsA8nvaGSCxqK5JIYdj1vk",
         accessToken: accessToken.token as string,
       },
     });
 
     // "13.126.82.139"
-    const ip = "15.207.42.59";
+    const ip = "localhost";
     const token = jwt.sign(JSON.stringify(id), "awesome-learning");
 
     let html = "";
@@ -47,14 +47,14 @@ export const mail = async (email: any, type: any, id: any) => {
     }
 
     const mailOptions = {
-      from: "Crystoworld@gmail.com",
+      from: "ankantech96@gmail.com",
       to: email,
-      subject: "Shop with Crysto",
+      subject: "Verification Chat App",
       generateTextFromHTML: true,
       html,
     };
     const message = await smtpTransport.sendMail(mailOptions);
-    // console.log("mesage s ", message);
+    console.log("mesage s ", message);
     return { message: "success" };
   } catch (error) {
     return { message: "failure", error: JSON.stringify(error) };

@@ -32,17 +32,14 @@ export class UserRoutes {
         .post("", (req, res) => {
           this.functions.createUser(req, res);
         })
-        // .get("",auth,(req, res) => {
-        //   this.functions.getuser(req, res);
-        // })
+        .get("", auth, (req, res) => {
+          this.functions.getuser(req, res);
+        })
         .put("", auth, (req, res) => {
           this.functions.updateUser(req, res);
         })
         .get("/:id", auth, (req, res) => {
           this.functions.getuser(req, res);
-        })
-        .post("/address", auth, (req, res) => {
-          this.functions.addAddress(req, res);
         })
         .get("/confirmation/:id", (req, res) => {
           this.functions.routeback(req, res);
@@ -53,18 +50,14 @@ export class UserRoutes {
         .post("/login", (req, res) => {
           this.functions.login(req, res);
         })
-        .post("/adminlogin", (req, res) => {
-          this.functions.adminlogin(req, res);
-        })
+
         .post("/forgotpassword", (req, res) => {
           this.functions.forgotpassword(req, res);
         })
-        .post("/notification", (req, res) => {
-          this.functions.sendMessage(req, res);
+        .post("/getchat", (req, res) => {
+          this.functions.getchats(req, res);
         })
-        .post("/token", (req, res) => {
-          this.functions.saveToken(req, res);
-        })
+
     );
   }
 }

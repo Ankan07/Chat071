@@ -1,10 +1,11 @@
-import { Db, ObjectId } from "mongodb";
+import { connect, Db, ObjectId } from "mongodb";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { mail } from "../../Utils/mail";
 import bcrypt from "bcrypt";
 import path from "path";
 import Axios from "axios";
+import { timeStamp } from "console";
 export class UserFunctions {
   COLLECTION = "user";
   constructor(private db: Db) { }
@@ -27,10 +28,16 @@ export class UserFunctions {
           return;
         }
       }
+      else {
+        queryBody = {
+          emailConfirmed: true,
+        }
+      }
+
 
       const result = await this.db
         .collection(this.COLLECTION)
-        .findOne(queryBody);
+        .find(queryBody).toArray();
 
       res.send({ message: "success", data: result });
     } catch (err) {
@@ -218,6 +225,32 @@ export class UserFunctions {
         .send({ status: false, message: "error occured", error: err });
     }
   }
+  async getchats(req: Request, res: Response) {
+    try {
+      const post = req.body;
+      const id1 = post.id1;
+      const id2 = post.id2;
+      let queryBody = {};
+
+      queryBody = { "chat-id": { $in: [id1, id2] } }
+
+      const result2 = await this.db
+        .collection("chats")
+        .updateMany(queryBody, { $set: { "status": "delivered" } });
+
+      const result = await this.db
+        .collection("chats")
+        .find({}).sort({ "timestamp": 1 }).toArray();
+
+      res.send({ status: true, data: result });
+
+
+    } catch (err) {
+      res
+        .status(500)
+        .send({ status: false, message: "error occured", error: err });
+    }
+  }
 
   async createUser(req: Request, res: Response) {
     try {
@@ -294,221 +327,5 @@ export class UserFunctions {
     }
   }
 
-  async addAddress(req: Request, res: Response) {
-    try {
-      const body: { id: string; address: any } = req.body;
-      if (!body.id) {
-        res.status(400).send({
-          status: false,
-          message: "Missing field userId",
-        });
-      }
 
-      if (!body.address) {
-        res.status(400).send({
-          status: false,
-          message: "Missing field address",
-        });
-      }
-
-      await this.db.collection(this.COLLECTION).updateOne(
-        { _id: new ObjectId(body.id) },
-        {
-          $push: {
-            address: body.address,
-          },
-        }
-      );
-
-      res.send({
-        status: true,
-        message: "Address saved to database!",
-      });
-    } catch (err) {
-      res.status(500).send({
-        status: false,
-        message: "some error occured",
-        error: err,
-      });
-    }
-  }
-  // deprecated function
-  // Use createUser() or updateUser() respectively
-  async createOrUpdateUser(req: Request, res: Response) {
-    try {
-      const post = req.body;
-      let queryBody = {};
-      if (post._id) {
-        // _id available so its a old user and a Update request
-        queryBody = {
-          _id: new ObjectId(post._id),
-        };
-        delete post._id;
-        const result = await this.db
-          .collection(this.COLLECTION)
-          .updateOne(queryBody, {
-            $set: post,
-          });
-
-        res.send({ status: true, message: "updated an user" });
-      } else {
-        // console.log("email is ", post.email);
-        const finduser = await this.db
-          .collection(this.COLLECTION)
-          .findOne({ email: post.email });
-
-        if (finduser) {
-          // console.log("in here");
-          // user exist
-          if (finduser.emailConfirmed === true) {
-            // console.log("user already");
-            res.send({ status: true, message: "user already exist" });
-          } else {
-            res.send({ status: true, message: "Please confirm email" });
-          }
-        } else {
-          // user doesnot exist
-
-          post.emailConfirmed = false;
-          post.password = bcrypt.hashSync(post.password, 15);
-          const result = await this.db
-            .collection(this.COLLECTION)
-            .insertOne(post);
-
-          const mailstatus = await mail(
-            post.email,
-            "registration",
-            result.ops[0]._id
-          );
-
-          const token = jwt.sign(result.ops[0], "my-secret");
-
-          res.send({
-            status: true,
-            message: "created an user",
-            token,
-            data: result.ops[0],
-          });
-        }
-      }
-    } catch (error) {
-      res.status(500).send({
-        message: "failure",
-        error: JSON.stringify(error),
-      });
-    }
-  }
-  async adminlogin(req: Request, res: Response) {
-    console.log("new nigga");
-    try {
-      const post = req.body;
-
-      const update = await this.db.collection(this.COLLECTION).findOne({
-        $and: [
-          { email: post.email },
-          { emailConfirmed: true },
-          { type: "admin" },
-        ],
-      });
-      const verifypassword = bcrypt.compareSync(post.password, update.password);
-
-      if (verifypassword === true) {
-        delete update.password;
-        const token = jwt.sign(update, "my-secret");
-
-        res.send({
-          status: true,
-          message: "Successfully logged in",
-          token,
-          data: update,
-          errorCode: 0,
-        });
-      } else {
-        res.send({
-          status: false,
-          message: "Incorrect Credentials",
-        });
-      }
-    } catch (err) {
-      res.status(500).send({
-        status: false,
-        message: err,
-      });
-    }
-  }
-
-  async sendMessage(req: Request, res: Response) {
-    try {
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization:
-          "key=AAAAyliwVeI:APA91bHsZ3M_WeH63ZSc9xuA7koujitekO9wQOYcgVsHh3st_k55hTB_S4Er04r41sQeP6BSQuHia4jlpw67ssDeQJvDlEx02uZ0JakA7kbH8obyBDfeNGFTZnLa_eZheFQWKqOamWCE",
-      };
-
-      const result = await Axios.post(
-        "https://fcm.googleapis.com/fcm/send",
-        {
-          to: "/topics/customer",
-          notification: {
-            body: req.body.message,
-            title: "Crysto World",
-          },
-        },
-        {
-          headers: headers,
-        }
-      );
-      console.log(result.data);
-
-      res.send({
-        message: "Message was successfully delivered!",
-        status: true,
-      });
-    } catch (err) {
-      res.status(500).send({
-        message: "Message was not delivered!",
-        status: false,
-      });
-    }
-    // TODO
-  }
-
-  async saveToken(req: Request, res: Response) {
-    const body: { _id: string; token: string } = req.body;
-    if (!body._id || !body.token) {
-      res
-        .status(400)
-        .send({ message: "_id and token expected", status: false });
-      return;
-    }
-
-    let oid: ObjectId;
-    try {
-      oid = new ObjectId(body._id);
-    } catch (error) {
-      res.status(400).send({ message: "Invalid user id provided", error });
-      return;
-    }
-
-    try {
-      const resp = await this.db.collection(this.COLLECTION).updateOne(
-        {
-          _id: oid,
-        },
-        {
-          $set: {
-            pushToken: body.token,
-          },
-        }
-      );
-
-      if (resp.modifiedCount) {
-        res.send({ message: "token saved", status: true });
-      } else {
-        res.send({ message: "user not found", status: false });
-      }
-    } catch (error) {
-      res.status(500).send({ message: "Mongodb error", status: false, error });
-    }
-  }
 }
