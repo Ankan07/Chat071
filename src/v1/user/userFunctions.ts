@@ -230,13 +230,12 @@ export class UserFunctions {
       const post = req.body;
       const id1 = post.id1;
       const id2 = post.id2;
+      const to = post.to;
+      const from = post.from;
+
       let queryBody = {};
 
-      queryBody = { "chat-id": { $in: [id1, id2] } }
 
-      const result2 = await this.db
-        .collection("chats")
-        .updateMany(queryBody, { $set: { "status": "delivered" } });
 
       const result = await this.db
         .collection("chats")

@@ -9,10 +9,10 @@ app.use(cors());
 let server = require("http").Server(app);
 let io = require("socket.io")(server, {
   cors: {
-    origin: "*",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     allowedHeaders: ["my-custom-header"],
-    credentials: false
+    credentials: true
   }
 });
 

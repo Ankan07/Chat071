@@ -6,15 +6,31 @@ export const Socket = async (io: any) => {
 
     const db: Db = await new Database().connectToMongoDb();
 
-    console.log("db is ", db);
+
 
     let statushash: any = {};
+    let typinghash: any = {};
     io.on("connection", function (socket: any) {
-
-        console.log("user connected", socket.id);
 
         socket.on('join', function (room: any) {
             socket.join(room);
+        })
+
+        socket.on('typing_receive', function (data: any) {
+
+            let to = data["to"];
+            let from = data["from"];
+            let fromcandidatelist = typinghash[from];
+            if (fromcandidatelist) {
+                fromcandidatelist[to] = "typing";
+                typinghash[from] = fromcandidatelist;
+            }
+            else {
+                let temphash: any = {};
+                temphash[to] = "typing";
+                typinghash[from] = temphash;
+            }
+
         })
 
         socket.on("received", async (data: any) => {
@@ -27,9 +43,10 @@ export const Socket = async (io: any) => {
                 }
 
 
-                const result = await db
+                const result: any = await db
                     .collection("chats")
                     .insertOne(data);
+
                 io.to('room1').emit('message', data);
             }
             catch (error) {
@@ -37,11 +54,22 @@ export const Socket = async (io: any) => {
             }
 
         })
-        socket.on("online_status", (data: any) => {
-            console.log("dat", data);
-            let hash: any = {}
-            let id = data["id"];
-            statushash[id] = "connected";
+        socket.on("online_status", async (data: any) => {
+
+            try {
+                console.log("dat", data);
+                let hash: any = {}
+                let id = data["id"];
+                statushash[id] = "connected";
+                let queryBody = { to: id }
+
+                const result2 = await db
+                    .collection("chats")
+                    .updateMany(queryBody, { $set: { "status": "delivered" } });
+            }
+            catch (error) {
+
+            }
 
         })
 
@@ -59,8 +87,13 @@ export const Socket = async (io: any) => {
 
         setInterval(() => {
             io.to('room1').emit('status', statushash);
-            console.log("emitting status ", statushash);
-        }, 5000)
+            io.to('room1').emit('typing_message', typinghash);
+            // console.log("emitting status ", statushash);
+        }, 3000)
+
+        // setInterval(() => {
+        //     typinghash = {};
+        // }, 5000)
 
     });
 
