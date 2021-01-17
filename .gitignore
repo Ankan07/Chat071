@@ -3,3 +3,4 @@
 *.http
 /http_requests
 /test_calls
+/src/config.ts
