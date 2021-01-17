@@ -89,11 +89,11 @@ export const Socket = async (io: any) => {
             io.to('room1').emit('status', statushash);
             io.to('room1').emit('typing_message', typinghash);
             // console.log("emitting status ", statushash);
-        }, 3000)
+        }, 1000)
 
-        // setInterval(() => {
-        //     typinghash = {};
-        // }, 5000)
+        setInterval(() => {
+            typinghash = {};
+        }, 5000)
 
     });
 

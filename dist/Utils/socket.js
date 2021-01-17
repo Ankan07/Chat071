@@ -62,6 +62,9 @@ exports.Socket = async (io) => {
         setInterval(() => {
             io.to('room1').emit('status', statushash);
             io.to('room1').emit('typing_message', typinghash);
-        }, 3000);
+        }, 1000);
+        setInterval(() => {
+            typinghash = {};
+        }, 5000);
     });
 };
