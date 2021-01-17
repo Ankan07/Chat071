@@ -1,5 +1,5 @@
 /node_modules
-/dist
+
 *.http
 /http_requests
 /test_calls
